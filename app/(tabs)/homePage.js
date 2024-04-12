@@ -31,7 +31,7 @@ export default function HomePage() {
             <Image source={{ uri: item.image }} style={styles.image} />
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.desc}>{item.description}</Text>
-            <Text style={styles.price}>${item.price}k</Text>
+            <Text style={styles.price}>${item.price}k333</Text>
           </View>
         )}
         keyExtractor={(item, index) => index.toString()} // Added keyExtractor
