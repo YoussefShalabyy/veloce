@@ -1,15 +1,16 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet , SafeAreaView} from "react-native";
 import React, { useState } from "react";
 import Input from "../components/input";
 import Btn from "../components/btn";
 import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-
+import Colors from "../constants/Colors";
 
 export default function register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmpassword, setconfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
@@ -37,22 +38,31 @@ export default function register() {
       });
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <View style={styles.innerContainer}>
       <Input
-        placeHolder="Enter Your Name"
+        placeHolder="Username"
         onChangeText={setName}
         value={name}
+        style={styles.Input}
       />
 
-      <Input placeHolder="Username" onChangeText={setEmail} value={email} />
+      <Input placeHolder="Email" onChangeText={setEmail} value={email}  style={styles.Input} />
       <Input
         placeHolder="Password"
         onChangeText={setPassword}
         value={password}
         secureTextEntry={true}
-       
+        style={styles.Input}
       />
-      <Btn text="Register" style={styles.btn1} onPress={handleRegister} />
+      <Input
+        placeHolder="Confirm Password"
+        onChangeText={setconfirmPassword}
+        value={confirmpassword}
+        secureTextEntry={true}
+        style={styles.Input}
+      />
+      <Btn text="Register" style={styles.registerBtn} onPress={handleRegister} />
       <Btn
         text="Already Has An Account? Login"
         type="Link"
@@ -63,17 +73,29 @@ export default function register() {
       />
       <Text style={styles.error}>{error}</Text>
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    paddingTop: 40,
+    paddingBottom: 20,
+    minWidth: "100%",
     flex: 1,
+    backgroundColor: Colors.dark.backgroundcolor,
     alignItems: "center",
-    justifyContent: "center",
   },
-  btn1: {
-    marginTop: 20,
+  innerContainer:{
+    padding: 20,
+    flex: 1,
+    minWidth: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
   },
   btn2: {
     width: "100%",
@@ -82,5 +104,20 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 18,
     marginTop: 10,
+  },
+  Input: {
+    borderRadius: 100,
+    marginTop: 20,
+    maxHeight: 60,
+    marginVertical: 10,
+    fontSize: 18,
+    backgroundColor: Colors.light.backgroundcolor,
+  },
+  registerBtn: {
+    marginTop: 10,
+    marginBottom: 20,
+    maxHeight: 60,
+    backgroundColor: Colors.main.backgroundcolor,
+    fontSize: 18,
   },
 });
