@@ -7,7 +7,7 @@ import HomePage from './(tabs)/homePage';
 export default function index() {
   return (
 
-      <Welcome />
+      <HomePage />
     
   )
 }
