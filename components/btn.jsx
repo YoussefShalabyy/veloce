@@ -33,7 +33,7 @@ export default function Btn({
 
 const styles = StyleSheet.create({
   btn: {
-    borderRadius: 10,
+    borderRadius: 100,
     width: 380,
     padding: 20,
     alignItems: "center",
