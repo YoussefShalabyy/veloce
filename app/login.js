@@ -1,9 +1,18 @@
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { React, useState } from "react";
 import Input from "../components/input";
 import Btn from "../components/btn";
 import { router } from "expo-router";
 import Colors from "../constants/Colors";
+import googleIcon from "../assets/googleIcon.png";
+import facebookIcon from "../assets/facebookIcon.png";
 
 export default function () {
   const [email, setEmail] = useState("");
@@ -30,6 +39,18 @@ export default function () {
           style={styles.Input}
         />
         <Btn text="Login" style={styles.loginBtn} />
+        <Text style={styles.loginWithText}>Or Sign in with</Text>
+        <View style={styles.rowView}>
+          <TouchableOpacity style={styles.loginGoogleButton}>
+            <Image source={googleIcon} style={styles.loginWithIcon} />
+            <Text style={styles.loginGoogleText}>Google</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.loginFacebookButton}>
+            <Image source={facebookIcon} style={styles.loginWithIcon} />
+            <Text style={styles.loginFacebookText}>Facebook</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.lowerSection}>
           <Btn
             type="Link"
@@ -86,10 +107,57 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundcolor,
   },
   loginBtn: {
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom: 20,
     maxHeight: 60,
     backgroundColor: Colors.main.backgroundcolor,
     fontSize: 18,
+  },
+  loginWithText: {
+    color: Colors.light.backgroundcolor,
+    fontSize: 18,
+    alignSelf: "flex-start",
+  },
+  rowView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    minWidth: "100%",
+    marginVertical: 10,
+  },
+  loginGoogleButton: {
+    backgroundColor: Colors.light.backgroundcolor,
+    minWidth: "48%",
+    maxWidth: "48%",
+    borderRadius: 100,
+    height: 40,
+    alignContent: "space-between",
+    justifyContent: "center",
+  },
+  loginGoogleText: {
+    color: Colors.dark.backgroundcolor,
+    fontSize: 16,
+    textAlign: "center",
+  },
+  loginFacebookButton: {
+    backgroundColor: Colors.light.backgroundcolor,
+    minWidth: "48%",
+    maxWidth: "48%",
+    padding: 10,
+    borderRadius: 100,
+    alignContent: "center",
+    justifyContent: "center",
+  },
+  loginFacebookText: {
+    color: Colors.dark.backgroundcolor,
+    fontSize: 16,
+    textAlign: "center",
+  },
+  loginWithIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: "contain",
+    position: "absolute",
+    borderRadius: 100,
   },
   lowerSection: {
     position: "absolute",

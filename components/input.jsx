@@ -35,5 +35,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 30,
     marginTop: 20,
+    paddingLeft : 30,
   },
 });
