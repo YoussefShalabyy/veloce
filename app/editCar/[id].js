@@ -67,6 +67,7 @@ const EditCar = () => {
                         oldCarData={oldCarData}
                         newCarDataController={{newCarData, setNewCarData}}
                         flexDirection={item === 'description' ? 'column' : 'row'}
+                        multiline={item === 'description' ? true : false}
                     />
                 )}
             />
