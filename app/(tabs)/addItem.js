@@ -15,7 +15,7 @@ import { Formik } from "formik";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
+import Colors from "../../constants/Colors";
 export default function Add() {
   // بنجيب كل البراندات
   const [brandList, setBrandList] = useState([]);
