@@ -1,9 +1,9 @@
 import { FlatList, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
-import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarFiled from "../../components/EditCarFiled";
 import Colors from "../../constants/Colors";
 
@@ -129,6 +129,15 @@ const EditCar = () => {
         }
     }
 
+    const deleteCar = () => {
+        deleteDoc(doc(db, 'cars', id))
+        .then(() => {
+            console.log(id, 'deleted!');
+            router.replace('/');
+        })
+        .catch(error => console.log(error));
+    }
+
     useEffect(() => {
         getCar();
         getBrands();
@@ -152,7 +161,10 @@ const EditCar = () => {
                 )}
             />
 
-            <Btn text='Update' onPress={updateCar} />
+            <View style={styles.buttons}>
+                <Btn style={styles.button} text='Update' onPress={updateCar} />
+                <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
+            </View>
         </ScrollView>
     )
 }
@@ -172,4 +184,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1
     },
+
+    buttons: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignContent: 'center'
+    },
+
+    button: {
+        flex: 1,
+        marginHorizontal: 5,
+    }
 });
