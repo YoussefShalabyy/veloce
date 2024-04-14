@@ -27,6 +27,14 @@ export default function HomePage() {
     });
     setCars(fetchedCars);
   };
+  const [barnds, setBrands] = useState([]);
+  const getBrands = async () => {
+    const querySnapshot = await getDocs(collection(db, "Brand"));
+    setBrandList([]);
+    querySnapshot.forEach((doc) => {
+      setBrandList((brandList) => [...brandList, doc.data()]);
+    });
+  };
 
   useEffect(() => {
     getData();

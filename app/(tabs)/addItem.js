@@ -22,10 +22,7 @@ export default function Add() {
   const getBrandList = async () => {
     const querySnapshot = await getDocs(collection(db, "Brand"));
     setBrandList([]);
-
     querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log("Doc: ", doc.data());
       setBrandList((brandList) => [...brandList, doc.data()]);
     });
   };
