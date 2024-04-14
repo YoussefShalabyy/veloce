@@ -14,7 +14,7 @@ export default {
   light: {
     text: "#fff",
     backgroundcolor: "#E6E6E6",
-    whiteBackground: "#fff",
+    whiteBackground: "#ffffff",
     tint: secondColor,
     tabIconDefault: "#ccc",
     tabIconSelected: mainColor,

@@ -13,6 +13,8 @@ import { db } from "../../firebase";
 import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
 import Profile from "../../assets/Profile.png";
+import EngineIcon from "../../assets/EngineIcon.png";
+import GasStationIcon from "../../assets/GasStationIcon.png";
 
 export default function HomePage() {
   const [cars, setCars] = useState([]);
@@ -64,16 +66,20 @@ export default function HomePage() {
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <View style={styles.CategoryItem}>
-                  <Text style={{ fontSize: 25 }}>{item.name}</Text>
                   <Image
                     source={{ uri: item.logo }}
-                    style={{
-                      marginLeft: 3,
-                      width: 50,
-                      height: 50,
-                      resizeMode: "contain",
-                    }}
+                    style={styles.categoryImage}
                   />
+                  <View
+                    style={[styles.itemName, { backgroundColor: item.color }]}
+                  >
+                    <Text
+                      style={{ fontSize: 25, fontWeight: "400" }}
+                      numberOfLines={1}
+                    >
+                      {item.name}
+                    </Text>
+                  </View>
                 </View>
               )}
               keyExtractor={(item, index) => index.toString()} // Added keyExtractor
@@ -100,8 +106,23 @@ export default function HomePage() {
               {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
 
               <View style={styles.CarInfo}>
-                <Text style={styles.desc}>{item.description}</Text>
-                <Text style={styles.price}>${item.price}k</Text>
+                <View style={styles.CarInfoLeftSection}>
+                  <View style={styles.LeftCarInfoItemView}>
+                    <Image source={GasStationIcon} style={styles.CarItemIcon} />
+                    <Text style={styles.CarItemInfoText}>
+                      {item.fuelEfficiency}
+                    </Text>
+                  </View>
+                  <View style={styles.LeftCarInfoItemView}>
+                    <Image source={EngineIcon} style={styles.CarItemIcon} />
+                    <Text style={styles.CarItemInfoText}>
+                      {item.horsePower} HP
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.CarInfoRightSection}>
+                  <Text style={styles.ItemPrice}>${item.price}</Text>
+                </View>
               </View>
             </View>
           )}
@@ -166,8 +187,25 @@ const styles = StyleSheet.create({
   },
   CategoriesView: {
     marginTop: 20,
-    maxHeight: 80,
+    maxHeight: 90,
     marginLeft: 12,
+  },
+  CategoryItem: {
+    borderRadius: 10,
+    marginHorizontal: 10,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    flexDirection: "column",
+    minWidth: 100,
+  },
+  categoryImage: {
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
+    zIndex: 1,
+    alignSelf: "center",
+    position: "absolute",
+    bottom: 35,
   },
   CategoryText: {
     paddingHorizontal: 10,
@@ -175,16 +213,18 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "600",
   },
-  CategoryItem: {
-    backgroundColor: Colors.light.backgroundcolor,
-    padding: 10,
-    borderRadius: 10,
-    marginHorizontal: 10,
-    // height: 50,
-    justifyContent: "center",
+  itemName: {
     alignItems: "center",
-    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: Colors.light.backgroundcolor,
+    paddingHorizontal: 5,
+    paddingBottom: 5,
+    paddingTop: 25,
+    borderRadius: 10,
+    minWidth: 100,
+    maxWidth: 100,
   },
+
   list: {
     width: "100%",
     marginTop: 50,
@@ -194,19 +234,26 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#EDEDED", // Added background color
+    backgroundColor: "#EDEDED",
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
-    elevation: 3, // Added elevation for shadow effect
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 
   image: {
     width: 330,
-    height: 180,
-    // resizeMode:"contain",
-    borderRadius: 10, // Added border radius to match the item's border
+    height: 160,
+    resizeMode: "contain",
+    borderRadius: 10,
     marginBottom: 10,
   },
   name: {
@@ -227,15 +274,46 @@ const styles = StyleSheet.create({
   },
   CarInfo: {
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     flexDirection: "row",
+  },
+  CarInfoLeftSection: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  CarInfoRightSection: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  LeftCarInfoItemView: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.light.whiteBackground,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 100,
+    marginHorizontal: 5,
+  },
+  CarItemIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: "contain",
+    marginRight: 10,
+  },
+  CarItemInfoText: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  ItemPrice: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: Colors.dark.backgroundcolor,
   },
   desc: {
     fontSize: 16,
     marginBottom: 5,
-  },
-  price: {
-    color: "blue",
-    fontSize: 18,
   },
 });
