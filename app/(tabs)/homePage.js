@@ -68,12 +68,19 @@ export default function HomePage() {
                 <View style={styles.CategoryItem}>
                   <Image
                     source={{ uri: item.logo }}
-                    style={styles.categoryImage}
+                    style={[
+                      styles.categoryImage,
+                      { width: item.name === "Porsche" ? 200 : 50 },
+                      { height: item.name === "Porsche" ? 55 : 50 },
+                    ]}
                   />
                   <View
                     style={[styles.itemName, { backgroundColor: item.color }]}
                   >
-                    <Text style={{ fontSize: 25  , fontWeight:"400"}} numberOfLines={1}>
+                    <Text
+                      style={{ fontSize: 25, fontWeight: "400" }}
+                      numberOfLines={1}
+                    >
                       {item.name}
                     </Text>
                   </View>
@@ -196,8 +203,8 @@ const styles = StyleSheet.create({
     minWidth: 100,
   },
   categoryImage: {
-    width: 50,
-    height: 50,
+    // width: 50,
+    // height: 50,
     resizeMode: "contain",
     zIndex: 1,
     alignSelf: "center",
