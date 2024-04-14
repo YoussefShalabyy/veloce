@@ -15,6 +15,7 @@ import Search from "../assets/Search.png";
 import Home from "../assets/Home.png";
 import Profile from "../assets/Profile.png";
 import NavBarIcon from "../assets/NavBarIcon.png";
+import { router } from "expo-router";
 
 const BottomNavBar = () => {
   return (
@@ -26,7 +27,11 @@ const BottomNavBar = () => {
         <TouchableOpacity>
           <Image source={Search} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            router.navigate("addItem");
+          }}
+        >
           <Image source={Profile} style={styles.ProfileIcon} />
         </TouchableOpacity>
       </View>

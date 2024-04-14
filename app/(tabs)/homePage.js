@@ -80,7 +80,7 @@ export default function HomePage() {
                 <Text style={styles.carName}>{item.name}</Text>
               </View>
               <Image source={{ uri: item.image }} style={styles.image} />
-              <View>
+              <View style={styles.CarInfo}>
                 <Text style={styles.desc}>{item.description}</Text>
                 <Text style={styles.price}>${item.price}k</Text>
               </View>
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
   list: {
     width: "100%",
     marginTop: 20,
+    marginBottom: 35,
   },
   item: {
     flexDirection: "column",
@@ -181,9 +182,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 3, // Added elevation for shadow effect
   },
+
   image: {
     width: 330,
-    height: 200,
+    height: 140,
     borderRadius: 10, // Added border radius to match the item's border
     marginBottom: 10,
   },
@@ -191,6 +193,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 20,
     marginBottom: 5,
+  },
+  CarHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  carName: {
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    fontSize: 25,
+    fontWeight: "600",
+  },
+  CarInfo: {
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
   },
   desc: {
     fontSize: 16,
