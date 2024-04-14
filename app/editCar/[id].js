@@ -4,7 +4,7 @@ import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
-import EditCarFiled from "../../components/EditCarFiled";
+import EditCarField from "../../components/EditCarField";
 import Colors from "../../constants/Colors";
 
 const EditCar = () => {
@@ -152,7 +152,7 @@ const EditCar = () => {
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (
-                    <EditCarFiled
+                    <EditCarField
                         attributeName={item.name}
                         placeHolder={item.placeHolder}
                         oldCarData={oldCarData}
