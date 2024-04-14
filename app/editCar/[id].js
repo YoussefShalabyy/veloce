@@ -6,20 +6,98 @@ import { db } from "../../firebase";
 import { collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarFiled from "../../components/EditCarFiled";
 import Colors from "../../constants/Colors";
-import { Picker } from "@react-native-picker/picker";
 
 const EditCar = () => {
     const { id } = useLocalSearchParams();
     const [brands, setBrands] = useState([]);
-    const [changeBrand, setChangeBrand] = useState(false);
     const [oldCarData, setOldCarData] = useState(null);
     const [newCarData, setNewCarData] = useState(null);
     const { width, height } = useWindowDimensions();
     const attributeNames = [
-        'name', 'description', 'price', 'color', 'year',
-        'warranty', 'transmissionName', 'transmission', 'torque', 'topSpeed',
-        'mileage', 'location', 'liter', 'horsePower', 'fuelType',
-        'fuelEfficiency', 'displacement', 'condition', 'bodyType', 'acceleration'
+        {
+            name: 'name',
+            placeHolder: 'Name',
+        },
+        {
+            name: 'description',
+            placeHolder: 'Description',
+        },
+        {
+            name: 'price',
+            placeHolder: 'Price',
+        },
+        {
+            name: 'color',
+            placeHolder: 'Color',
+        },
+        {
+            name: 'year',
+            placeHolder: 'Year',
+        },
+        {
+            name: 'warranty',
+            placeHolder: 'Warranty',
+        },
+        {
+            name: 'transmissionName',
+            placeHolder: 'TransmissionName',
+        },
+        {
+            name: 'transmission',
+            placeHolder: 'Transmission',
+        },
+        {
+            name: 'torque',
+            placeHolder: 'Torque',
+        },
+        {
+            name: 'topSpeed',
+            placeHolder: 'Top speed',
+        },
+        {
+            name: 'mileage',
+            placeHolder: 'Mileage',
+        },
+        {
+            name: 'location',
+            placeHolder: 'Location',
+        },
+        {
+            name: 'liter',
+            placeHolder: 'Liter',
+        },
+        {
+            name: 'horsePower',
+            placeHolder: 'HorsePower',
+        },
+        {
+            name: 'fuelType',
+            placeHolder: 'FuelType',
+        },
+        {
+            name: 'fuelEfficiency',
+            placeHolder: 'FuelEfficiency',
+        },
+        {
+            name: 'displacement',
+            placeHolder: 'Displacement',
+        },
+        {
+            name: 'condition',
+            placeHolder: 'Condition',
+        },
+        {
+            name: 'bodyType',
+            placeHolder: 'Body Type',
+        },
+        {
+            name: 'acceleration',
+            placeHolder: 'Acceleration',
+        },
+        {
+            name: 'brand',
+            placeHolder: 'Brand',
+        },
     ]
 
     const getBrands = async () => {
@@ -63,31 +141,16 @@ const EditCar = () => {
                 data={attributeNames}
                 renderItem={({ item }) => (
                     <EditCarFiled
-                        attributeName={item}
+                        attributeName={item.name}
+                        placeHolder={item.placeHolder}
                         oldCarData={oldCarData}
                         newCarDataController={{newCarData, setNewCarData}}
-                        flexDirection={item === 'description' ? 'column' : 'row'}
-                        multiline={item === 'description' ? true : false}
+                        flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
+                        multiline={item.name === 'description' ? true : false}
+                        choices={item.name === 'brand' ? brands : []}
                     />
                 )}
             />
-
-            { brands.length > 0 &&
-            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={styles.label}>Brand: </Text>
-                <Picker style={styles.selectBox}
-                    selectedValue={changeBrand ? newCarData.brand : oldCarData?.brand}
-                    onValueChange={(itemValue) => {
-                        setNewCarData({...newCarData, brand: itemValue});
-                        setChangeBrand(true);
-                    }}
-                >
-                    {brands.map((brand, index) => (
-                        <Picker.Item key={index} label={brand} value={brand} />
-                    ))}
-                </Picker>
-            </View>
-            }
 
             <Btn text='Update' onPress={updateCar} />
         </ScrollView>
@@ -109,10 +172,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         flex: 1
     },
-
-    selectBox: {
-        marginBottom: 10,
-        padding: 10,
-        fontSize: 30,
-    }
 });
