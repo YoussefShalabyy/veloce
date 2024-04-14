@@ -21,15 +21,21 @@ const BottomNavBar = () => {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{
+          router.navigate("homePage");
+        }}>
           <Image source={Home} style={styles.icon} />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity
+        onPress={() => {
+          router.navigate("addItem"); 
+        }}
+        >
           <Image source={Search} style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            router.navigate("addItem");
+            router.navigate("profile");
           }}
         >
           <Image source={Profile} style={styles.ProfileIcon} />

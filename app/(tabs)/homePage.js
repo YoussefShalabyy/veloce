@@ -73,10 +73,7 @@ export default function HomePage() {
                   <View
                     style={[styles.itemName, { backgroundColor: item.color }]}
                   >
-                    <Text
-                      style={{ fontSize: 25, fontWeight: "400" }}
-                      numberOfLines={1}
-                    >
+                    <Text style={{ fontSize: 25  , fontWeight:"400"}} numberOfLines={1}>
                       {item.name}
                     </Text>
                   </View>
