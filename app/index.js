@@ -5,7 +5,7 @@ import Add from "./(tabs)/addItem";
 import HomePage from "./(tabs)/homePage";
 
 export default function index() {
-  return <Add />;
+  return <HomePage />;
 }
 
 const styles = StyleSheet.create({

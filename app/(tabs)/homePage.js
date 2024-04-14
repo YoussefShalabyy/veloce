@@ -27,17 +27,18 @@ export default function HomePage() {
     });
     setCars(fetchedCars);
   };
-  const [barnds, setBrands] = useState([]);
+  const [brands, setBrands] = useState([]);
   const getBrands = async () => {
     const querySnapshot = await getDocs(collection(db, "Brand"));
-    setBrandList([]);
+    setBrands([]);
     querySnapshot.forEach((doc) => {
-      setBrandList((brandList) => [...brandList, doc.data()]);
+      setBrands((brands) => [...brands, doc.data()]);
     });
   };
 
   useEffect(() => {
     getData();
+    getBrands();
   }, []);
 
   return (
@@ -59,11 +60,20 @@ export default function HomePage() {
           <View>
             <FlatList
               horizontal
-              data={cars}
+              data={brands}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
                 <View style={styles.CategoryItem}>
-                  <Text>{item.brand}</Text>
+                  <Text style={{ fontSize: 25 }}>{item.name}</Text>
+                  <Image
+                    source={{ uri: item.logo }}
+                    style={{
+                      marginLeft: 3,
+                      width: 50,
+                      height: 50,
+                      resizeMode: "contain",
+                    }}
+                  />
                 </View>
               )}
               keyExtractor={(item, index) => index.toString()} // Added keyExtractor
@@ -79,7 +89,16 @@ export default function HomePage() {
               <View style={styles.CarHeader}>
                 <Text style={styles.carName}>{item.name}</Text>
               </View>
-              <Image source={{ uri: item.image }} style={styles.image} />
+
+              {item.images && item.images.length > 0 && (
+                <Image
+                  source={{ uri: item.images[0] }} // Display the first image from the array
+                  style={styles.image}
+                />
+              )}
+
+              {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
+
               <View style={styles.CarInfo}>
                 <Text style={styles.desc}>{item.description}</Text>
                 <Text style={styles.price}>${item.price}k</Text>
@@ -161,14 +180,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginHorizontal: 10,
-    width: 100,
-    height: 50,
+    // height: 50,
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
   },
   list: {
     width: "100%",
-    marginTop: 20,
+    marginTop: 50,
     marginBottom: 35,
   },
   item: {
@@ -185,7 +204,8 @@ const styles = StyleSheet.create({
 
   image: {
     width: 330,
-    height: 140,
+    height: 180,
+    // resizeMode:"contain",
     borderRadius: 10, // Added border radius to match the item's border
     marginBottom: 10,
   },

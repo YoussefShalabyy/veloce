@@ -79,9 +79,10 @@ export default function Add() {
       try {
         const docRef = await addDoc(collection(db, "cars"), values);
         if (docRef.id) {
-          alert("added....!!")
+          
           setLoading(false);
           setImages([]);
+          alert("added....!!");
         }
       } catch (error) {
         console.error("Error adding car:", error);
