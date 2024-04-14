@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
+import Colors from "../constants/Colors";
 
 const EditCarFiled = ({
     oldCarData,
@@ -15,7 +16,7 @@ const EditCarFiled = ({
     const [changeBrand, setChangeBrand] = useState(false);
 
     return (
-        <View style={[styles.field, { flexDirection: flexDirection }]}>
+        <View style={{display: 'flex', flexDirection: flexDirection, alignItems: (attributeName === 'brand' ? '' : 'center')}}>
             <Text style={styles.label}>{placeHolder}:</Text>
             { multiline ?
             <TextInput
@@ -58,6 +59,7 @@ const EditCarFiled = ({
 
 const styles = StyleSheet.create({
     field: {
+        flex: 1,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     },
 
     label: {
-        fontSize: 30,
+        fontSize: 15,
         fontWeight: 'bold',
         flex: 1,
     },
@@ -77,8 +79,8 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         borderRadius: 10,
         color: "black",
-        fontSize: 30,
-        flex: 5,
+        fontSize: 20,
+        flex: 1.2,
     },
 
 
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         fontSize: 30,
+        backgroundColor: '#fff',
     }
 });
 

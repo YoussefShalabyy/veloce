@@ -40,7 +40,7 @@ const EditCar = () => {
         },
         {
             name: 'transmissionName',
-            placeHolder: 'TransmissionName',
+            placeHolder: 'Transmission name',
         },
         {
             name: 'transmission',
@@ -68,15 +68,15 @@ const EditCar = () => {
         },
         {
             name: 'horsePower',
-            placeHolder: 'HorsePower',
+            placeHolder: 'Horse power',
         },
         {
             name: 'fuelType',
-            placeHolder: 'FuelType',
+            placeHolder: 'Fuel type',
         },
         {
             name: 'fuelEfficiency',
-            placeHolder: 'FuelEfficiency',
+            placeHolder: 'Fuel efficiency',
         },
         {
             name: 'displacement',
@@ -144,8 +144,11 @@ const EditCar = () => {
     }, []);
 
     return (
-        <ScrollView contentContainerStyle={[styles.container, {width: width, height: height}]}>
-            <Text style={styles.label}>Edit {oldCarData?.name}</Text>
+        <View style={[styles.container, {width: width, height: height - 80}]}>
+            <View style={{ flex: .25 }}>
+                <Text style={styles.label}>Edit {oldCarData?.name}</Text>
+            </View>
+            <View style={{display: 'flex', flex: 5, justifyContent: 'center', alignContent: 'center'}}>
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (
@@ -159,13 +162,14 @@ const EditCar = () => {
                         choices={item.name === 'brand' ? brands : []}
                     />
                 )}
-            />
+                />
+                </View>
 
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
             </View>
-        </ScrollView>
+        </View>
     )
 }
 
@@ -173,27 +177,22 @@ export default EditCar;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        display: 'flex',
         backgroundColor: Colors.light.backgroundcolor,
         alignItems: 'center',
         justifyContent: 'space-between',
     },
 
     label: {
-        fontSize: 30,
+        fontSize: 20,
         fontWeight: 'bold',
-        flex: 1
     },
 
     buttons: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center'
+        flex: 1,
     },
 
     button: {
-        flex: 1,
-        marginHorizontal: 5,
+        marginVertical: 5
     }
 });
