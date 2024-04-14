@@ -3,7 +3,7 @@ import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import Colors from "../constants/Colors";
 
-const EditCarFiled = ({
+const EditCarField = ({
     oldCarData,
     newCarDataController,
     attributeName,
@@ -92,4 +92,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default EditCarFiled;
+export default EditCarField;
