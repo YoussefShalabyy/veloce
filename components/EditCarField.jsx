@@ -16,11 +16,11 @@ const EditCarField = ({
     const [changeBrand, setChangeBrand] = useState(false);
 
     return (
-        <View style={{display: 'flex', flexDirection: flexDirection, alignItems: (attributeName === 'brand' ? '' : 'center')}}>
+        <View style={[styles.field, {flexDirection: flexDirection, alignItems: (attributeName === 'brand' ? '' : 'center')}]}>
             <Text style={styles.label}>{placeHolder}:</Text>
             { multiline ?
             <TextInput
-                style={styles.input}
+                style={[styles.input, { width: '90%'}]}
                 placeHolder={`${placeHolder}`}
                 defaultValue={oldCarData != null ? oldCarData[attributeName] : ''}
                 onChangeText={attr => {
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         color: "black",
         fontSize: 20,
-        flex: 1.2,
+        flex: 2.5,
     },
 
 

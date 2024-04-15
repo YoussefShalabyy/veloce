@@ -13,6 +13,8 @@ const EditCar = () => {
     const [oldCarData, setOldCarData] = useState(null);
     const [newCarData, setNewCarData] = useState(null);
     const { width, height } = useWindowDimensions();
+    const [ editImages, setEditImages ] = useState(false);
+
     const attributeNames = [
         {
             name: 'name',
@@ -143,31 +145,38 @@ const EditCar = () => {
         getBrands();
     }, []);
 
-    return (
-        <View style={[styles.container, {width: width, height: height - 80}]}>
-            <View style={{ flex: .25 }}>
-                <Text style={styles.label}>Edit {oldCarData?.name}</Text>
+    if (editImages)
+        return (
+            <View style={[styles.container, { width: width, height: height }]}>
+                <Text style={styles.label}>Edit {oldCarData?.name} images</Text>
+                <Btn text={'Back'} onPress={() => setEditImages(false)} />
             </View>
-            <View style={{display: 'flex', flex: 5, justifyContent: 'center', alignContent: 'center'}}>
-            <FlatList
-                data={attributeNames}
-                renderItem={({ item }) => (
-                    <EditCarField
-                        attributeName={item.name}
-                        placeHolder={item.placeHolder}
-                        oldCarData={oldCarData}
-                        newCarDataController={{newCarData, setNewCarData}}
-                        flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
-                        multiline={item.name === 'description' ? true : false}
-                        choices={item.name === 'brand' ? brands : []}
-                    />
-                )}
+        )
+
+    return (
+        <View style={[styles.container, {width: width, height: height}]}>
+            <Text style={[styles.label, { flex: .1 }]}>Edit {oldCarData?.name}</Text>
+            
+                <FlatList
+                    data={attributeNames}
+                    renderItem={({ item }) => (
+                        <EditCarField
+                            attributeName={item.name}
+                            placeHolder={item.placeHolder}
+                            oldCarData={oldCarData}
+                            newCarDataController={{newCarData, setNewCarData}}
+                            flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
+                            multiline={item.name === 'description' ? true : false}
+                            choices={item.name === 'brand' ? brands : []}
+                        />
+                    )}
+                    style={{ flex: 1, width: width, paddingHorizontal: 10 }}
                 />
-                </View>
 
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
+                <Btn style={styles.button} text={'Edit images'} onPress={() => setEditImages(true)} />
             </View>
         </View>
     )
@@ -180,7 +189,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: Colors.light.backgroundcolor,
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
     },
 
     label: {
@@ -189,10 +198,17 @@ const styles = StyleSheet.create({
     },
 
     buttons: {
-        flex: 1,
+        flex: .3,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
 
     button: {
-        marginVertical: 5
+        marginHorizontal: 5,
+        padding: 5,
+        fontSize: 15,
+        flex: 1,
     }
 });
