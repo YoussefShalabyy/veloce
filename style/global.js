@@ -1,3 +1,5 @@
+import Colors from "../constants/Colors";
+
 const GlobalStyles = {
     container: {
         display: 'flex',
