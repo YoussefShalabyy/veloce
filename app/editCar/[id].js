@@ -1,11 +1,12 @@
-import { FlatList, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarField from "../../components/EditCarField";
-import Colors from "../../constants/Colors";
+import EditCarImages from "../../components/EditCarImages";
+import GlobalStyles from "../../style/global";
 
 const EditCar = () => {
     const { id } = useLocalSearchParams();
@@ -13,7 +14,7 @@ const EditCar = () => {
     const [oldCarData, setOldCarData] = useState(null);
     const [newCarData, setNewCarData] = useState(null);
     const { width, height } = useWindowDimensions();
-    const [ editImages, setEditImages ] = useState(false);
+    const [ editImages, setEditImages ] = useState(true);
 
     const attributeNames = [
         {
@@ -146,16 +147,11 @@ const EditCar = () => {
     }, []);
 
     if (editImages)
-        return (
-            <View style={[styles.container, { width: width, height: height }]}>
-                <Text style={styles.label}>Edit {oldCarData?.name} images</Text>
-                <Btn text={'Back'} onPress={() => setEditImages(false)} />
-            </View>
-        )
+        return <EditCarImages data={oldCarData} setEditImages={setEditImages} />
 
     return (
-        <View style={[styles.container, {width: width, height: height}]}>
-            <Text style={[styles.label, { flex: .1 }]}>Edit {oldCarData?.name}</Text>
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height}]}>
+            <Text style={[GlobalStyles.label, { flex: .1 }]}>Edit {oldCarData?.name}</Text>
             
                 <FlatList
                     data={attributeNames}
@@ -178,27 +174,17 @@ const EditCar = () => {
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
                 <Btn style={styles.button} text={'Edit images'} onPress={() => setEditImages(true)} />
             </View>
-        </View>
+
+            <StatusBar hidden />
+        </SafeAreaView>
     )
 }
 
 export default EditCar;
 
 const styles = StyleSheet.create({
-    container: {
-        display: 'flex',
-        backgroundColor: Colors.light.backgroundcolor,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-    label: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-
     buttons: {
-        flex: .3,
+        flex: .1,
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
