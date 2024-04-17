@@ -11,48 +11,29 @@ import {
   TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase";
 import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
-import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
 import CarsDisplayer from "../../components/CarsDisplayer";
 import Btn from "../../components/btn";
 
-export default function Category() {
+export default function Category({ route }) {
   const [cars, setCars] = useState([]);
   const [FilteredCars, setFilteredCars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [bodyTypes, setBodyTypes] = useState([]);
   const Brand = Route.params.item;
-  console.log(Brand);
   const ColorTheme = Brand.color || Colors.main.backgroundcolor;
   const BrandName = Brand.name || "Brand";
   const [selectedBodyType, setSelectedBodyType] = useState(null);
 
   const getData = async () => {
-    const querySnapshot = await getDocs(collection(db, "cars"));
-    const fetchedCars = [];
-    querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
-      fetchedCars.push(doc.data());
-    });
+    const q = query(collection(db, "cars"), where("brand", "==", BrandName));
+    const querySnapshot = await getDocs(q);
+    const fetchedCars = querySnapshot.docs.map((doc) => doc.data());
     setCars(fetchedCars);
-  };
-
-  const FilterCars = () => {
-    const filteredCars = cars.filter((car) => car.brand === BrandName);
-    setFilteredCars(filteredCars);
-
-    const bodyTypes = [];
-    filteredCars.forEach((car) => {
-      if (!bodyTypes.includes(car.bodyType)) {
-        bodyTypes.push(car.bodyType);
-      }
-    });
-    setBodyTypes(bodyTypes);
-
     setIsLoading(false);
   };
 
@@ -61,23 +42,23 @@ export default function Category() {
   }, []);
 
   useEffect(() => {
-    FilterCars();
-  }, [cars]);
-
-  useEffect(() => {
     const FilterCarsByBodyType = () => {
       if (selectedBodyType) {
         const filteredCars = cars.filter(
-          (car) => car.brand === BrandName && car.bodyType === selectedBodyType
+          (car) => car.bodyType === selectedBodyType
         );
         setFilteredCars(filteredCars);
       } else {
-        FilterCars();
+        setFilteredCars(cars);
       }
     };
-
     FilterCarsByBodyType();
-  }, [selectedBodyType]);
+  }, [selectedBodyType, cars]);
+
+  useEffect(() => {
+    const bodyTypes = cars.map((car) => car.bodyType);
+    setBodyTypes([...new Set(bodyTypes)]);
+  }, [cars]);
 
   if (isLoading) {
     return (
@@ -211,7 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundcolor,
     marginTop: 15,
     marginBottom: 5,
-    borderRadius: 10,
+    borderRadius: 5,
     marginHorizontal: 5,
     paddingHorizontal: 10,
     paddingVertical: 5,
