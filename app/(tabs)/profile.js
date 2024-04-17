@@ -16,7 +16,7 @@ export default function profile() {
     <SafeAreaView style={styles.container}>
       <View style={styles.innerContainer}>
         <Text>profile</Text>
-        <BottomNavBar />
+        <BottomNavBar  CurrentScreen={"profile"}/>
       </View>
     </SafeAreaView>
   );
