@@ -11,8 +11,8 @@ import MyLink from "../../components/MyLink";
 const EditCar = () => {
     const { id } = useLocalSearchParams();
     const [brands, setBrands] = useState([]);
-    const [oldCarData, setOldCarData] = useState(null);
-    const [newCarData, setNewCarData] = useState(null);
+    const [carData, setCarData] = useState(null);
+    const [updatedCarData, setUpdatedCarData] = useState(null);
     const { width, height } = useWindowDimensions();
 
     const attributeNames = [
@@ -117,16 +117,16 @@ const EditCar = () => {
         getDoc(carRef)
         .then(doc => {
             console.log(doc.id + ' => ' , doc.data());
-            setOldCarData(doc.data());
+            setCarData(doc.data());
         })
         .catch(error => console.log(error));
     }
 
     const updateCar = () => {
-        if (newCarData != null) {
+        if (updatedCarData != null) {
             const carRef = doc(db, 'cars', id);
-            updateDoc(carRef, newCarData)
-            .then(() => {console.log('Updated', newCarData)})
+            updateDoc(carRef, updatedCarData)
+            .then(() => {console.log('Updated', updatedCarData)})
             .catch(error => console.error(error));
         }
     }
@@ -153,8 +153,8 @@ const EditCar = () => {
                     <EditCarField
                         attributeName={item.name}
                         placeHolder={item.placeHolder}
-                        oldCarData={oldCarData}
-                        newCarDataController={{newCarData, setNewCarData}}
+                        carData={carData}
+                        updatedCarDataController={{updatedCarData, setUpdatedCarData}}
                         flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
                         multiline={item.name === 'description' ? true : false}
                         choices={item.name === 'brand' ? brands : []}
@@ -168,7 +168,7 @@ const EditCar = () => {
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
                 <MyLink bodyStyle={styles.button} title='Edit images' href={{
                     pathname: '/editCar/editImages',
-                    params: {id: id, name: oldCarData?.name, imgs: JSON.stringify(oldCarData?.images)}
+                    params: {id: id, name: carData?.name, imgs: JSON.stringify(carData?.images)}
                 }} />
             </View>
 
