@@ -2,39 +2,62 @@ import { FlatList, Image, Pressable, SafeAreaView, StyleSheet, Text, View, useWi
 import Btn from "../../components/btn";
 import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import { deleteObject, ref } from "firebase/storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
     
-    const { id, name, imgs } = useLocalSearchParams();
-    const [images, setImages] = useState(JSON.parse(imgs));
-    
+    const [params, setParams] = useState(null);
+
     const [ selectedImage, setSelectedImage ] = useState(-1);
-    const [newImages, setNewImages] = useState([]);
     const [deletedImages, setDeletedImages] = useState([]);
-    console.log('deleted', deletedImages);
-    console.log('current', images);
+    console.log('params', params);
+    console.log('deleted images', deletedImages);
+    console.log('current images', params?.images);
+    
+    useEffect(() => {
+        AsyncStorage.getItem('car')
+        .then(value => {
+            const data = JSON.parse(value);
+            setParams(data);
+        });
+    }, []);
 
     const deleteImage = (path) => {
-        filteredImages = images.filter(img => {
+        filteredImages = params?.images.filter(img => {
             if (img.path === path)
                 setDeletedImages([...deletedImages, img]);
             else
                 return img;
         });
 
-        setImages(filteredImages);
+        AsyncStorage.setItem('car', JSON.stringify({...params, images: filteredImages}))
+        .then(() => {
+            console.log('The image was deleted!');
+            setParams({...params, images: filteredImages});
+        })
+        .catch(error => console.log(error));
     }
 
     const deleteAllImages = () => {
-        setDeletedImages(images);
-        setImages([]);
+        AsyncStorage.getItem('car')
+        .then(value => {
+            let data = JSON.parse(value);
+            setDeletedImages(data.images);
+            data.images = [];
+            AsyncStorage.setItem('car', JSON.stringify(data))
+            .then(() => {
+                console.log('All images were deleted!');
+                setParams(data);
+            })
+            .catch(error => console.log(error));
+        })
     }
 
     const applyChanges = () => {
@@ -42,19 +65,20 @@ const EditCarImages = () => {
             const imgRef = ref(storage, img.path);
             deleteObject(imgRef)
             .then(() => {
-                console.log('The images was deleted!');
-                const carsRef = doc(db, 'cars', id);
-                updateDoc(carsRef, {
-                    images: images,
-                })
-                .then(() => {
-                    console.log('The car images in doc is updated!');
-                    setDeletedImages([]);
-                })
-                .catch(error => console.log(error));
+                console.log('The image was deleted!');
+                    const carsRef = doc(db, 'cars', params?.id);
+                    updateDoc(carsRef, {
+                        images: params?.images,
+                    })
+                    .then(() => {
+                        console.log('The car images in doc is updated!');
+                        setDeletedImages([]);
+                    })
+                    .catch(error => console.log(error));
             })
             .catch(error => console.log(error));
         });
+
         router.back();
     }
 
@@ -66,18 +90,18 @@ const EditCarImages = () => {
             ]}
         >
                 
-            <Text style={[GlobalStyles.label, { flex: .5 }]}>Edit {name} images</Text>
+            <Text style={[GlobalStyles.label, { flex: .5 }]}>Edit {params?.name} images</Text>
 
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: .9, width: width}}>
             <FlatList
-                data={images}
+                data={ params?.images }
                 renderItem={({ item }) => {
                     return (
                         <Pressable onPress={() => setSelectedImage(selectedImage === item.path ? -1 : item.path )}
                             style={[selectedImage === item.path ? { backgroundColor: 'blue', borderRadius: 5 } : {},
                             { display: 'flex', justifyContent: 'center', alignItems: 'center' }]}
                         >
-                            <Image source={{ uri: item.url.replace( item.path, item.path.replaceAll('/', '%2F') ) }} style={styles.image} />
+                            <Image source={{ uri: item.url }} style={styles.image} />
                         </Pressable>
                     );
                 }}

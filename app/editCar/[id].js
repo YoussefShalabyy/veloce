@@ -7,6 +7,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase
 import EditCarField from "../../components/EditCarField";
 import GlobalStyles from "../../style/global";
 import MyLink from "../../components/MyLink";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EditCar = () => {
     const { id } = useLocalSearchParams();
@@ -118,6 +119,7 @@ const EditCar = () => {
         .then(doc => {
             console.log(doc.id + ' => ' , doc.data());
             setCarData(doc.data());
+            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: doc.data().name, images: doc.data().images }));
         })
         .catch(error => console.log(error));
     }
@@ -126,7 +128,11 @@ const EditCar = () => {
         if (updatedCarData != null) {
             const carRef = doc(db, 'cars', id);
             updateDoc(carRef, updatedCarData)
-            .then(() => {console.log('Updated', updatedCarData)})
+            .then(() => {
+                console.log('Updated', updatedCarData);
+                setCarData({...carData, updatedCarData});
+                router.replace(`/`);
+            })
             .catch(error => console.error(error));
         }
     }
@@ -166,10 +172,7 @@ const EditCar = () => {
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
-                <MyLink bodyStyle={styles.button} title='Edit images' href={{
-                    pathname: '/editCar/editImages',
-                    params: {id: id, name: carData?.name, imgs: JSON.stringify(carData?.images)}
-                }} />
+                <Btn style={styles.button} text='Edit Images' onPress={() => router.navigate('/editCar/editImages')} />
             </View>
 
             <StatusBar hidden />
