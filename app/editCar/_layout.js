@@ -1,5 +1,6 @@
-import { Stack, Tabs } from "expo-router";
+import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function EditCarLayout() {
     return (
@@ -8,12 +9,12 @@ export default function EditCarLayout() {
                 <Stack.Screen
                     name="[id]"
                     options={{
-                    headerTitle: 'Car Info',
+                    headerTitle: _ => <FontAwesome name="pencil" size={30} />,
                 }}/>
                 <Stack.Screen
                     name="editImages"
                     options={{
-                        headerTitle: 'Car Imgaes',
+                        headerTitle: _ => <FontAwesome name="image" size={30} />,
                     }}
                 />
             </Stack>
