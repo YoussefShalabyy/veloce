@@ -130,11 +130,15 @@ const EditCar = () => {
             updateDoc(carRef, updatedCarData)
             .then(() => {
                 console.log('Updated', updatedCarData);
-                setCarData({...carData, updatedCarData});
-                router.replace(`/`);
             })
             .catch(error => console.error(error));
         }
+
+        AsyncStorage.removeItem('car')
+                .then(() => console.log("The car was romoved from AasyncStorage!"))
+                .catch(error => console.log(error));
+                
+        router.replace(`/`);
     }
 
     const deleteCar = () => {
