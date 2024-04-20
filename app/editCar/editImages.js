@@ -1,13 +1,19 @@
 import { FlatList, Image, Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
-import Btn from "./btn";
-import GlobalStyles from "../style/global";
+import Btn from "../../components/btn";
+import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
 import { useState } from "react";
+import { useLocalSearchParams } from "expo-router";
 
 
-const EditCarImages = ({ data, setEditImages }) => {
+const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
+    
+    const { id, name, imgs } = useLocalSearchParams();
+    const images = JSON.parse(imgs);
+    
     const [ selectedImage, setSelectedImage ] = useState(-1);
+    const [newImages, setNewImages] = useState([]);
     console.log(selectedImage);
 
     return (
@@ -18,18 +24,19 @@ const EditCarImages = ({ data, setEditImages }) => {
             ]}
         >
                 
-            <Text style={[GlobalStyles.label, { flex: .5 }]}>Edit {data?.name} images</Text>
+            <Text style={[GlobalStyles.label, { flex: .5 }]}>Edit {name} images</Text>
 
             <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: .9, width: width}}>
             <FlatList
-                data={data?.images}
+                data={images}
                 renderItem={({ item, index }) => {
+                    console.log(item.url);
                     return (
                         <Pressable onPress={() => setSelectedImage(selectedImage === index ? -1 : index )}
                             style={[selectedImage === index ? { borderWidth: 2, borderColor: 'blue' } : {},
                             { display: 'flex', justifyContent: 'center', alignItems: 'center' }]}
                         >
-                            <Image source={{ uri: item.url }} style={styles.image} />
+                            <Image source={{ uri: item.url.replace( item.path, item.path.replaceAll('/', '%2F') ) }} style={styles.image} />
                         </Pressable>
                     );
                 }}
@@ -50,7 +57,6 @@ const EditCarImages = ({ data, setEditImages }) => {
                     <Btn style={styles.button} text='Delete' onPress={() => console.log('Delete')} color={'rgb(255, 50, 70)'} />
                 </>
                 }
-                <Btn style={styles.button} text={'Back'} onPress={() => setEditImages(false)} />
             </View>
 
 
