@@ -1,12 +1,12 @@
 import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from "react-native";
-import { router, useLocalSearchParams } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarField from "../../components/EditCarField";
-import EditCarImages from "../../components/EditCarImages";
 import GlobalStyles from "../../style/global";
+import MyLink from "../../components/MyLink";
 
 const EditCar = () => {
     const { id } = useLocalSearchParams();
@@ -14,7 +14,6 @@ const EditCar = () => {
     const [oldCarData, setOldCarData] = useState(null);
     const [newCarData, setNewCarData] = useState(null);
     const { width, height } = useWindowDimensions();
-    const [ editImages, setEditImages ] = useState(true);
 
     const attributeNames = [
         {
@@ -146,9 +145,6 @@ const EditCar = () => {
         getBrands();
     }, []);
 
-    if (editImages)
-        return <EditCarImages data={oldCarData} setEditImages={setEditImages} />
-
     return (
         <SafeAreaView style={[GlobalStyles.container, {width: width, height: height}]}>
             <Text style={[GlobalStyles.label, { flex: .1 }]}>Edit {oldCarData?.name}</Text>
@@ -172,7 +168,10 @@ const EditCar = () => {
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
-                <Btn style={styles.button} text={'Edit images'} onPress={() => setEditImages(true)} />
+                <MyLink bodyStyle={styles.button} title='Edit images' href={{
+                    pathname: '/editCar/editImages',
+                    params: {id: id, name: oldCarData?.name, imgs: JSON.stringify(oldCarData?.images)}
+                }} />
             </View>
 
             <StatusBar hidden />
