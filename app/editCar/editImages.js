@@ -4,7 +4,7 @@ import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { doc, updateDoc } from "firebase/firestore";
+import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import { deleteObject, ref } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -29,9 +29,9 @@ const EditCarImages = () => {
         });
     }, []);
 
-    const deleteImage = (path) => {
+    const deleteImage = (image) => {
         filteredImages = params?.images.filter(img => {
-            if (img.path === path)
+            if (img === image)
                 setDeletedImages([...deletedImages, img]);
             else
                 return img;
@@ -62,13 +62,14 @@ const EditCarImages = () => {
 
     const applyChanges = () => {
         deletedImages.forEach(img => {
-            const imgRef = ref(storage, img.path);
+            const path = img.substring(img.indexOf('o/'), img.indexOf('?alt')).substring(2).replaceAll('%2F', '/');
+            const imgRef = ref(storage, path);
             deleteObject(imgRef)
             .then(() => {
                 console.log('The image was deleted!');
                     const carsRef = doc(db, 'cars', params?.id);
                     updateDoc(carsRef, {
-                        images: params?.images,
+                        images: arrayRemove(img),
                     })
                     .then(() => {
                         console.log('The car images in doc is updated!');
@@ -97,11 +98,16 @@ const EditCarImages = () => {
                 data={ params?.images }
                 renderItem={({ item }) => {
                     return (
-                        <Pressable onPress={() => setSelectedImage(selectedImage === item.path ? -1 : item.path )}
-                            style={[selectedImage === item.path ? { backgroundColor: 'blue', borderRadius: 5 } : {},
-                            { display: 'flex', justifyContent: 'center', alignItems: 'center' }]}
+                        <Pressable
+                            onPress={() => setSelectedImage(selectedImage === item ? -1 : item )}
+                            style={
+                                [
+                                    (selectedImage === item ? { backgroundColor: 'blue', borderRadius: 5 } : {}),
+                                    { display: 'flex', justifyContent: 'center', alignItems: 'center' }
+                                ]
+                            }
                         >
-                            <Image source={{ uri: item.url }} style={styles.image} />
+                            <Image source={{ uri: item }} style={styles.image} />
                         </Pressable>
                     );
                 }}
