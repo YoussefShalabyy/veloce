@@ -14,13 +14,12 @@ const EditCarImages = () => {
     
     const [ selectedImage, setSelectedImage ] = useState(-1);
     const [newImages, setNewImages] = useState([]);
-    console.log(selectedImage);
 
     return (
         <SafeAreaView
             style={[
                 GlobalStyles.container,
-                { padding: 10, justifyContent: 'space-between', width: width, height: height }
+                { padding: 10, justifyContent: 'space-between', width: width, height: height - 60 }
             ]}
         >
                 
@@ -30,7 +29,6 @@ const EditCarImages = () => {
             <FlatList
                 data={images}
                 renderItem={({ item, index }) => {
-                    console.log(item.url);
                     return (
                         <Pressable onPress={() => setSelectedImage(selectedImage === index ? -1 : index )}
                             style={[selectedImage === index ? { borderWidth: 2, borderColor: 'blue' } : {},

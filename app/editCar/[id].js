@@ -146,24 +146,22 @@ const EditCar = () => {
     }, []);
 
     return (
-        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height}]}>
-            <Text style={[GlobalStyles.label, { flex: .1 }]}>Edit {oldCarData?.name}</Text>
-            
-                <FlatList
-                    data={attributeNames}
-                    renderItem={({ item }) => (
-                        <EditCarField
-                            attributeName={item.name}
-                            placeHolder={item.placeHolder}
-                            oldCarData={oldCarData}
-                            newCarDataController={{newCarData, setNewCarData}}
-                            flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
-                            multiline={item.name === 'description' ? true : false}
-                            choices={item.name === 'brand' ? brands : []}
-                        />
-                    )}
-                    style={{ flex: 1, width: width, paddingHorizontal: 10 }}
-                />
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 60 }]}>
+            <FlatList
+                data={attributeNames}
+                renderItem={({ item }) => (
+                    <EditCarField
+                        attributeName={item.name}
+                        placeHolder={item.placeHolder}
+                        oldCarData={oldCarData}
+                        newCarDataController={{newCarData, setNewCarData}}
+                        flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
+                        multiline={item.name === 'description' ? true : false}
+                        choices={item.name === 'brand' ? brands : []}
+                    />
+                )}
+                style={{ flex: 1, width: width, paddingHorizontal: 10 }}
+            />
 
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
