@@ -3,11 +3,12 @@ import Btn from "../../components/btn";
 import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
 import { useEffect, useState } from "react";
-import { router, useLocalSearchParams } from "expo-router";
+import { Tabs , router } from "expo-router";
 import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase";
 import { deleteObject, ref } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { FontAwesome } from "@expo/vector-icons";
 
 
 const EditCarImages = () => {
@@ -85,38 +86,40 @@ const EditCarImages = () => {
 
     return (
         <SafeAreaView
-            style={[
-                GlobalStyles.container,
-                { padding: 10, justifyContent: 'space-between', width: width, height: height - 60 }
-            ]}
+        style={[
+            GlobalStyles.container,
+            { padding: 10, justifyContent: 'space-between', width: width, height: height - 50 }
+        ]}
         >
-                
-            <Text style={[GlobalStyles.label, { flex: .5 }]}>Edit {params?.name} images</Text>
+            <Tabs.Screen
+                options={{
+                    title: `${params?.name} images`,
+                }}
+            />
 
-            <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: .9, width: width}}>
+            <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flex: 7, width: width}}>
             <FlatList
                 data={ params?.images }
                 renderItem={({ item }) => {
                     return (
                         <Pressable
-                            onPress={() => setSelectedImage(selectedImage === item ? -1 : item )}
-                            style={
-                                [
-                                    (selectedImage === item ? { backgroundColor: 'blue', borderRadius: 5 } : {}),
-                                    { display: 'flex', justifyContent: 'center', alignItems: 'center' }
-                                ]
-                            }
+                        onPress={() => setSelectedImage(selectedImage === item ? -1 : item )}
+                        style={
+                            [
+                                (selectedImage === item ? { backgroundColor: 'blue', borderRadius: 5 } : {}),
+                                { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }
+                            ]
+                        }
                         >
                             <Image source={{ uri: item }} style={styles.image} />
                         </Pressable>
                     );
                 }}
-                horizontal
-                showsHorizontalScrollIndicator
+                
             />
             </View>
 
-            <View style={[styles.buttons, { flex: 3 }]}>
+            <View style={[styles.buttons, { flex: 2 }]}>
                 {selectedImage === -1 ?
                 <>
                     <Btn style={styles.button} text='Add new images' onPress={() => console.log('Add new images')} />
@@ -141,9 +144,10 @@ export default EditCarImages;
 
 const styles = StyleSheet.create({
     image: {
-        width: 150,
-        height: 150,
-        marginHorizontal: 5,
+        width: 300,
+        height: 300,
+        marginVertical: 5,
+        flex: 1,
     },
 
     buttons: {

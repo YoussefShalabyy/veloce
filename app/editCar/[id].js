@@ -156,7 +156,7 @@ const EditCar = () => {
     }, []);
 
     return (
-        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 60 }]}>
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50 }]}>
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (
@@ -176,7 +176,7 @@ const EditCar = () => {
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
-                <Btn style={styles.button} text='Edit Images' onPress={() => router.navigate('/editCar/editImages')} />
+                {/* <Btn style={styles.button} text='Edit Images' onPress={() => router.navigate('/editCar/editImages')} /> */}
             </View>
 
             <StatusBar hidden />
