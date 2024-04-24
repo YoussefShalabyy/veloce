@@ -1,12 +1,11 @@
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, Text, View, useWindowDimensions } from "react-native";
-import { Link, router, useLocalSearchParams } from 'expo-router';
+import { FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
+import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarField from "../../components/EditCarField";
 import GlobalStyles from "../../style/global";
-import MyLink from "../../components/MyLink";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EditCar = () => {
@@ -176,7 +175,6 @@ const EditCar = () => {
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
-                {/* <Btn style={styles.button} text='Edit Images' onPress={() => router.navigate('/editCar/editImages')} /> */}
             </View>
 
             <StatusBar hidden />
