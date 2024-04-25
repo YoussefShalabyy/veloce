@@ -32,9 +32,9 @@ const EditCarImages = () => {
         });
     }, []);
 
-    const deleteImage = (image) => {
+    const deleteImage = () => {
         filteredImages = params?.images.filter(img => {
-            if (img === image)
+            if (img === selectedImage)
                 setDeletedImages([...deletedImages, img]);
             else
                 return img;
@@ -74,6 +74,11 @@ const EditCarImages = () => {
         setNewImages([...newImages, ...pickedImages]);
     };
 
+    const replaceImage = async () => {
+        deleteImage();
+        await addOneImage();
+    }
+
     const applyDeleteImages = async () => {
         try {
             if (deletedImages.length > 0) {
@@ -102,7 +107,6 @@ const EditCarImages = () => {
                     console.log(`The images was uploaded`);
                     await car.addImage(url);
                     console.log(`${url} was added`);
-                    await AsyncStorage.setItem()
                 });
             }
         } catch (error) {
@@ -172,8 +176,8 @@ const EditCarImages = () => {
                 </>
                 :
                 <>
-                    <Btn style={styles.button} text='Replace' onPress={() => console.log('Replace')} />
-                    <Btn style={styles.button} text='Delete' onPress={() => deleteImage(selectedImage)} color={'rgb(255, 50, 70)'} />
+                    <Btn style={styles.button} text='Replace' onPress={replaceImage} />
+                    <Btn style={styles.button} text='Delete' onPress={deleteImage} color={'rgb(255, 50, 70)'} />
                 </>
                 }
                 <Btn style={styles.button} text='Apply Changes' onPress={applyChanges} />
