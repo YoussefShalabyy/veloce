@@ -5,7 +5,7 @@ const thirdColor = "#d2d2d2";
 export default {
   main: {
     text: "#000",
-    backgroundcolor: "#9CE0FE",
+    backgroundcolor: "#262526",
     // #E2FF66
     tint: mainColor,
     tabIconDefault: "#ccc",
@@ -14,14 +14,16 @@ export default {
   light: {
     text: "#fff",
     backgroundcolor: "#E6E6E6",
-    whiteBackground: "#ffffff",
+    whiteBackground: "#F2EDE4",
+    secondBackground: "#fff",
+    // #fff
     tint: secondColor,
     tabIconDefault: "#ccc",
     tabIconSelected: mainColor,
   },
   dark: {
     text: "#fff",
-    backgroundcolor: "#1d1d1d",
+    backgroundcolor: "#262526",
     tint: thirdColor,
     tabIconDefault: "#ccc",
     tabIconSelected: mainColor,
