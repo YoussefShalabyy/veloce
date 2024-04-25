@@ -129,34 +129,50 @@ const EditCar = () => {
         }
     }
 
-    const updateCar = () => {
-        if (updatedCarData != null) {
-            car.update(updatedCarData)
-            .then(carId => console.log(`Car with id ${carId} is updated!`))
-            .catch(error => console.log(error));
+    const getData = async () => {
+        try {
+            setIsLoading(true);
+            await getCar();
+            await getBrands();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
         }
-
-        AsyncStorage.removeItem('car')
-                .then(() => console.log("The car was romoved from AasyncStorage!"))
-                .catch(error => console.log(error));
-                
-        router.replace(`/`);
     }
 
-    const deleteCar = () => {
-        car.delete()
-        .then(carId => {
+    const updateCar = async () => {
+        try {
+            if (updatedCarData != null) {
+                setIsLoading(true);
+                const carId = await car.update(updatedCarData);
+                console.log(`Car with id ${carId} is updated!`);
+            }
+    
+            await AsyncStorage.removeItem('car');
+            console.log("The car was romoved from AasyncStorage!");
+                    
+            router.replace(`/`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const deleteCar = async () => {
+        try {
+            setIsLoading(true);
+            const carId = await car.delete();
             console.log(carId, 'deleted!');
             router.replace('/');
-        })
-        .catch(error => console.log(error));
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
-        getCar()
-        .then(getBrands)
-        .then(() => setIsLoading(false))
-        .catch(error => console.log(error));
+        getData();
     }, []);
 
     if (isLoading)

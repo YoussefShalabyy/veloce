@@ -14,7 +14,7 @@ import Colors from "../../constants/Colors";
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
 
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     
     const [params, setParams] = useState(null);
 
@@ -32,8 +32,8 @@ const EditCarImages = () => {
         .then(value => {
             const data = JSON.parse(value);
             setParams(data);
-            setIsLoading(false);
-        });
+        })
+        .catch(error => console.log(error));
     }, []);
 
     const deleteImage = () => {
@@ -51,7 +51,7 @@ const EditCarImages = () => {
             console.log('The image was deleted!');
             setParams({...params, images: filteredImages});
         })
-        .catch(error => console.log(error));
+        .catch(error => console.log(error))
     }
 
     const deleteAllImages = () => {
@@ -65,8 +65,8 @@ const EditCarImages = () => {
                 console.log('All images were deleted!');
                 setParams(data);
             })
-            .catch(error => console.log(error));
         })
+        .catch(error => console.log(error));
     }
 
     const addOneImage = async () => {
@@ -122,11 +122,15 @@ const EditCarImages = () => {
 
     const applyChanges = async () => {
         try {
+            setIsLoading(true);
             await applyDeleteImages();
             await applyAddImages();
+            setSelectedImage(-1);
             router.replace('/');
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
