@@ -33,12 +33,14 @@ const EditCarImages = () => {
     }, []);
 
     const deleteImage = () => {
-        filteredImages = params?.images.filter(img => {
+        const filteredImages = params?.images.filter(img => {
             if (img === selectedImage)
                 setDeletedImages([...deletedImages, img]);
             else
                 return img;
         });
+
+        setNewImages(newImages.filter(img => img !== selectedImage));
 
         AsyncStorage.setItem('car', JSON.stringify({...params, images: filteredImages}))
         .then(() => {
