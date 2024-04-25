@@ -4,11 +4,11 @@ import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
 import { useEffect, useState } from "react";
 import { Tabs , router } from "expo-router";
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
-import { db, storage } from "../../firebase";
-import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { arrayRemove, arrayUnion } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from 'expo-image-picker';
+import ImagesPicker from "../../controllers/ImagesPicker";
+import Car from "../../controllers/Car";
+import StorageImage from "../../controllers/StorageImage";
 
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
@@ -64,76 +64,60 @@ const EditCarImages = () => {
     }
 
     const addOneImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled)
-            setNewImages([...newImages, result.assets[0].uri]);
+        let result = await ImagesPicker.pickOneImage();
+        setNewImages([...newImages, result.assets[0].uri]);
     }
 
     const addNewImages = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            aspect: [4, 3],
-            quality: 1,
-            allowsMultipleSelection: true,
-        });
-
-        if (!result.canceled) {
-            const pickedImages = result.assets.map((asset) => asset.uri);
-            return pickedImages;
-        }
+        let result = await ImagesPicker.pickImages();
+        const pickedImages = result.assets.map((asset) => asset.uri);
+        setNewImages([...newImages, ...pickedImages]);
     };
 
-    const applyChanges = () => {
-        deletedImages.forEach(img => {
-            const path = img.substring(img.indexOf('o/'), img.indexOf('?alt')).substring(2).replaceAll('%2F', '/');
-            const imgRef = ref(storage, path);
-            deleteObject(imgRef)
-            .then(() => {
-                console.log('The image was deleted!');
-                    const carsRef = doc(db, 'cars', params?.id);
-                    updateDoc(carsRef, {
-                        images: arrayRemove(img),
-                    })
-                    .then(() => {
-                        console.log('The car images in doc is updated!');
-                        setDeletedImages([]);
-                    })
-                    .catch(error => console.log(error));
-            })
-            .catch(error => console.log(error));
-        });
+    const applyDeleteImages = async () => {
+        try {
+            if (deletedImages.length > 0) {
+                deletedImages.forEach(async img => {
+                    const car = new Car(params?.id);
+                    const image = new StorageImage( StorageImage.getImagePathInStorage(img) );
+                    await image.delete();
+                    console.log('The image was deleted!');
+                    await car.removeImage(img);
+                    console.log(`${img} was deleted!`);
+                    setDeletedImages([]);
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-        newImages.map(image => {
-            fetch(image)
-            .then(response => {
-                response.blob()
-                .then(blob => {
-                    const storageRef = ref(storage, "communityPost/" + Date.now() + ".jpg");
-                    uploadBytes(storageRef, blob)
-                    .then(() => {
-                        getDownloadURL(storageRef)
-                        .then(url => {
-                            const carsRef = doc(db, 'cars', params?.id);
-                            updateDoc(carsRef, {
-                                images: arrayUnion(url),
-                            })
-                            .then(() => {
-                                console.log('The car images in doc is updated!');
-                                setNewImages([]);
-                            })
-                        })
-                    })
-                })
-            })
-        })
+    const applyAddImages = async () => {
+        try {
+            if (newImages.length > 0) {
+                newImages.map(async img => {
+                    const car = new Car(params?.id);
+                    const image = new StorageImage("communityPost/" + Date.now() + ".jpg");
+                    const url = await image.upload(img);
+                    console.log(`The images was uploaded`);
+                    await car.addImage(url);
+                    console.log(`${url} was added`);
+                    await AsyncStorage.setItem()
+                });
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
-        router.back();
+    const applyChanges = async () => {
+        try {
+            await applyDeleteImages();
+            await applyAddImages();
+            router.replace('/');
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -181,7 +165,7 @@ const EditCarImages = () => {
                     <Btn
                         style={styles.button}
                         text='Add new images'
-                        onPress={() => addNewImages().then(value => setNewImages(value))}
+                        onPress={addNewImages}
                     />
                     
                     <Btn style={styles.button} text='Delete all' onPress={deleteAllImages} color={'rgb(255, 50, 70)'} />
