@@ -9,6 +9,7 @@ import ImagesPicker from "../../controllers/ImagesPicker";
 import Car from "../../controllers/Car";
 import StorageImage from "../../controllers/StorageImage";
 import Loading from "../../components/Loading";
+import Colors from "../../constants/Colors";
 
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
@@ -136,7 +137,7 @@ const EditCarImages = () => {
         <SafeAreaView
         style={[
             GlobalStyles.container,
-            { padding: 10, justifyContent: 'space-between', width: width, height: height - 50 }
+            { padding: 10, justifyContent: 'space-between', backgroundColor: Colors.light.whiteBackground, width: width, height: height - 50 }
         ]}
         >
             <Tabs.Screen

@@ -8,6 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Brand from "../../controllers/Brand";
 import Car from "../../controllers/Car";
 import Loading from "../../components/Loading";
+import Colors from "../../constants/Colors";
 
 const EditCar = () => {
     const { width, height } = useWindowDimensions();
@@ -151,7 +152,7 @@ const EditCar = () => {
         return <Loading />
 
     return (
-        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50 }]}>
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50, backgroundColor: Colors.light.whiteBackground, }]}>
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (

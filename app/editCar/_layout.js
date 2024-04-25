@@ -1,11 +1,17 @@
-import { Stack, Tabs } from "expo-router";
+import { Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Colors from "../../constants/Colors";
 
 export default function EditCarLayout() {
     return (
         <SafeAreaProvider>
-            <Tabs>
+            <Tabs screenOptions={{
+                tabBarActiveTintColor: Colors.light.tabIconSelected,
+                tabBarActiveBackgroundColor: Colors.light.tint,
+                tabBarInactiveTintColor: Colors.light.tabIconDefault,
+                tabBarInactiveBackgroundColor: Colors.light.secondBackground,
+            }} >
                 <Tabs.Screen
                     name="[id]"
                     options={{

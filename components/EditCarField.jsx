@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
 import GlobalStyles from "../style/global";
+import Colors from "../constants/Colors";
 
 const EditCarField = ({
     carData,
@@ -67,16 +68,14 @@ const styles = StyleSheet.create({
     },
 
     input: {
-        padding: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
         borderWidth: 1,
-        borderColor: "#ccc",
-        backgroundColor: "white",
-        borderRadius: 10,
-        color: "black",
+        borderColor: Colors.dark.backgroundcolor,
+        borderRadius: 100,
         fontSize: 20,
         flex: 2.5,
     },
-
 
     selectBox: {
         marginBottom: 10,
