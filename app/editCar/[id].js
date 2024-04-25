@@ -110,6 +110,25 @@ const EditCar = () => {
         },
     ]
 
+    const getCar = async () => {
+        try {
+            const carData = await car.get();
+            setCarData(carData); 
+            await AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }));
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getBrands = async () => {
+        try {
+            const brands = await Brand.getBrands();
+            setBrands(brands);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const updateCar = () => {
         if (updatedCarData != null) {
             car.update(updatedCarData)
@@ -134,18 +153,10 @@ const EditCar = () => {
     }
 
     useEffect(() => {
-        car.get()
-        .then(carData => {
-            setCarData(carData); 
-            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }))
-            .then(() => {
-                Brand.getBrands()
-                .then(brands => setBrands(brands))
-                .catch(error => console.log(error));
-            })
-        })
-        .catch(error => console.log(error))
-        .finally(() => setIsLoading(false));
+        getCar()
+        .then(getBrands)
+        .then(() => setIsLoading(false))
+        .catch(error => console.log(error));
     }, []);
 
     if (isLoading)
