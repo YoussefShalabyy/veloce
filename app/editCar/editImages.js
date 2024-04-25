@@ -4,14 +4,16 @@ import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
 import { useEffect, useState } from "react";
 import { Tabs , router } from "expo-router";
-import { arrayRemove, arrayUnion } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ImagesPicker from "../../controllers/ImagesPicker";
 import Car from "../../controllers/Car";
 import StorageImage from "../../controllers/StorageImage";
+import Loading from "../../components/Loading";
 
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
+
+    const [isLoading, setIsLoading] = useState(true);
     
     const [params, setParams] = useState(null);
 
@@ -29,6 +31,7 @@ const EditCarImages = () => {
         .then(value => {
             const data = JSON.parse(value);
             setParams(data);
+            setIsLoading(false);
         });
     }, []);
 
@@ -125,6 +128,9 @@ const EditCarImages = () => {
             console.log(error);
         }
     }
+
+    if (isLoading)
+     return <Loading />
 
     return (
         <SafeAreaView

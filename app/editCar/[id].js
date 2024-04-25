@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
+import { ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
@@ -7,15 +7,18 @@ import GlobalStyles from "../../style/global";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Brand from "../../controllers/Brand";
 import Car from "../../controllers/Car";
+import Loading from "../../components/Loading";
 
 const EditCar = () => {
+    const { width, height } = useWindowDimensions();
+
     const { id } = useLocalSearchParams();
     const car = new Car(id);
 
+    const [isLoading, setIsLoading] = useState(true);
     const [brands, setBrands] = useState([]);
     const [carData, setCarData] = useState(null);
     const [updatedCarData, setUpdatedCarData] = useState(null);
-    const { width, height } = useWindowDimensions();
 
     console.log(carData);
 
@@ -133,14 +136,19 @@ const EditCar = () => {
         car.get()
         .then(carData => {
             setCarData(carData); 
-            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }));
+            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }))
+            .then(() => {
+                Brand.getBrands()
+                .then(brands => setBrands(brands))
+                .catch(error => console.log(error));
+            })
         })
-        .catch(error => console.log(error));
-
-        Brand.getBrands()
-        .then(brands => setBrands(brands))
-        .catch(error => console.log(error));
+        .catch(error => console.log(error))
+        .finally(() => setIsLoading(false));
     }, []);
+
+    if (isLoading)
+        return <Loading />
 
     return (
         <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50 }]}>
