@@ -1,40 +1,40 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { useState } from "react";
-import Colors from "../constants/Colors";
+import GlobalStyles from "../style/global";
 
 const EditCarField = ({
-    oldCarData,
-    newCarDataController,
+    carData,
+    updatedCarDataController,
     attributeName,
     placeHolder,
     flexDirection,
     multiline,
     choices }) => {
     
-    const {newCarData, setNewCarData} = newCarDataController;
+    const {updatedCarData, setUpdatedCarData} = updatedCarDataController;
     const [changeBrand, setChangeBrand] = useState(false);
 
     return (
-        <View style={{display: 'flex', flexDirection: flexDirection, alignItems: (attributeName === 'brand' ? '' : 'center')}}>
-            <Text style={styles.label}>{placeHolder}:</Text>
+        <View style={[styles.field, {flexDirection: flexDirection, alignItems: (attributeName === 'brand' ? '' : 'center')}]}>
+            <Text style={[GlobalStyles.label, { flex: 1 }]}>{placeHolder}:</Text>
             { multiline ?
             <TextInput
-                style={styles.input}
+                style={[styles.input, { width: '90%'}]}
                 placeHolder={`${placeHolder}`}
-                defaultValue={oldCarData != null ? oldCarData[attributeName] : ''}
+                defaultValue={carData != null ? carData[attributeName] : ''}
                 onChangeText={attr => {
-                    setNewCarData({...newCarData, [attributeName]: attr});
-                    console.log(newCarData);
+                    setUpdatedCarData({...updatedCarData, [attributeName]: attr});
+                    console.log(updatedCarData);
                 }}
                 multiline
             />
             :
             choices !== undefined && choices.length > 0 ?
                 <Picker style={styles.selectBox}
-                    selectedValue={changeBrand ? newCarData.brand : oldCarData?.brand}
+                    selectedValue={changeBrand ? updatedCarData.brand : carData?.brand}
                     onValueChange={(itemValue) => {
-                        setNewCarData({...newCarData, brand: itemValue});
+                        setUpdatedCarData({...updatedCarData, brand: itemValue});
                         setChangeBrand(true);
                     }}
                 >
@@ -46,10 +46,10 @@ const EditCarField = ({
             <TextInput
                 style={styles.input}
                 placeHolder={`Enter the ${attributeName}`}
-                defaultValue={oldCarData != null ? oldCarData[attributeName] : ''}
+                defaultValue={carData != null ? carData[attributeName] : ''}
                 onChangeText={attr => {
-                    setNewCarData({...newCarData, [attributeName]: attr});
-                    console.log(newCarData);
+                    setUpdatedCarData({...updatedCarData, [attributeName]: attr});
+                    console.log(updatedCarData);
                 }}
             />
             }
@@ -66,12 +66,6 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
 
-    label: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        flex: 1,
-    },
-
     input: {
         padding: 10,
         borderWidth: 1,
@@ -80,7 +74,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         color: "black",
         fontSize: 20,
-        flex: 1.2,
+        flex: 2.5,
     },
 
 

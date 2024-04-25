@@ -1,18 +1,24 @@
-import { FlatList, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
-import { db } from "../../firebase";
-import { collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import EditCarField from "../../components/EditCarField";
-import Colors from "../../constants/Colors";
+import GlobalStyles from "../../style/global";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Brand from "../../controllers/Brand";
+import Car from "../../controllers/Car";
 
 const EditCar = () => {
     const { id } = useLocalSearchParams();
+    const car = new Car(id);
+
     const [brands, setBrands] = useState([]);
-    const [oldCarData, setOldCarData] = useState(null);
-    const [newCarData, setNewCarData] = useState(null);
+    const [carData, setCarData] = useState(null);
+    const [updatedCarData, setUpdatedCarData] = useState(null);
     const { width, height } = useWindowDimensions();
+
+    console.log(carData);
+
     const attributeNames = [
         {
             name: 'name',
@@ -100,99 +106,85 @@ const EditCar = () => {
         },
     ]
 
-    const getBrands = async () => {
-        const querySnapshot = await getDocs(collection(db, "Brand"));
-        let fetchedBrands = [];
-        querySnapshot.forEach((doc) => {
-          fetchedBrands.push(doc.data().name);
-        });
-        setBrands(fetchedBrands);
-      };
-    
-
-    const getCar = () => {
-        const carRef = doc(db, 'cars', id);
-        getDoc(carRef)
-        .then(doc => {
-            console.log(doc.id + ' => ' , doc.data());
-            setOldCarData(doc.data());
-        })
-        .catch(error => console.log(error));
-    }
-
     const updateCar = () => {
-        if (newCarData != null) {
-            const carRef = doc(db, 'cars', id);
-            updateDoc(carRef, newCarData)
-            .then(() => {console.log('Updated', newCarData)})
-            .catch(error => console.error(error));
+        if (updatedCarData != null) {
+            car.update(updatedCarData)
+            .then(carId => console.log(`Car with id ${carId} is updated!`))
+            .catch(error => console.log(error));
         }
+
+        AsyncStorage.removeItem('car')
+                .then(() => console.log("The car was romoved from AasyncStorage!"))
+                .catch(error => console.log(error));
+                
+        router.replace(`/`);
     }
 
     const deleteCar = () => {
-        deleteDoc(doc(db, 'cars', id))
-        .then(() => {
-            console.log(id, 'deleted!');
+        car.delete()
+        .then(carId => {
+            console.log(carId, 'deleted!');
             router.replace('/');
         })
         .catch(error => console.log(error));
     }
 
     useEffect(() => {
-        getCar();
-        getBrands();
+        car.get()
+        .then(carData => {
+            setCarData(carData); 
+            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }));
+        })
+        .catch(error => console.log(error));
+
+        Brand.getBrands()
+        .then(brands => setBrands(brands))
+        .catch(error => console.log(error));
     }, []);
 
     return (
-        <View style={[styles.container, {width: width, height: height - 80}]}>
-            <View style={{ flex: .25 }}>
-                <Text style={styles.label}>Edit {oldCarData?.name}</Text>
-            </View>
-            <View style={{display: 'flex', flex: 5, justifyContent: 'center', alignContent: 'center'}}>
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50 }]}>
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (
                     <EditCarField
                         attributeName={item.name}
                         placeHolder={item.placeHolder}
-                        oldCarData={oldCarData}
-                        newCarDataController={{newCarData, setNewCarData}}
+                        carData={carData}
+                        updatedCarDataController={{updatedCarData, setUpdatedCarData}}
                         flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
                         multiline={item.name === 'description' ? true : false}
                         choices={item.name === 'brand' ? brands : []}
                     />
                 )}
-                />
-                </View>
+                style={{ flex: 1, width: width, paddingHorizontal: 10 }}
+            />
 
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
                 <Btn style={styles.button} text='Delete' onPress={deleteCar} color={'rgb(255, 50, 70)'} />
             </View>
-        </View>
+
+            <StatusBar hidden />
+        </SafeAreaView>
     )
 }
 
 export default EditCar;
 
 const styles = StyleSheet.create({
-    container: {
-        display: 'flex',
-        backgroundColor: Colors.light.backgroundcolor,
-        alignItems: 'center',
-        justifyContent: 'space-between',
-    },
-
-    label: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-
     buttons: {
-        flex: 1,
+        flex: .1,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
 
     button: {
-        marginVertical: 5
+        marginHorizontal: 5,
+        padding: 5,
+        fontSize: 15,
+        flex: 1,
     }
 });
