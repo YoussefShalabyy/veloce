@@ -1,4 +1,4 @@
-import { ActivityIndicator, FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
+import { FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
