@@ -33,6 +33,8 @@ const EditCarImages = () => {
 
     let unsub = null;
     useEffect(() => {
+        Alert.alert('Be careful!', 'After editing, you should click "Apply changes" button, that appears if you add or delete an image,\n\
+        to save your changes');
         AsyncStorage.getItem('car').then(value => {
             const data = JSON.parse(value);
             if (unsub == null) {
@@ -133,18 +135,40 @@ const EditCarImages = () => {
     }
     
     const applyChanges = async () => {
-        try {
-            await applyDeleteImages();
-            setDeletedImages([]);
-            
-            await applyAddImages();
-            setAddedImages([]);
+        await applyDeleteImages();
+        setDeletedImages([]);
+        
+        await applyAddImages();
+        setAddedImages([]);
 
-            setIsLoading(false);
-        } catch (error) {
-            console.error(error);
-            Alert.alert('Error!', 'There is an error occurs! Please, try again later!');
-        }
+        setIsLoading(false);
+    }
+
+    const confirmChanges = () => {
+        Alert.alert(
+        'Confirmation',
+        `Are you sure that you want to
+        ${addedImages.length > 0 ? `- Add ${addedImages.length} image(s)` : ''}
+        ${deletedImages.length > 0 ? `- Delete ${deletedImages.length} image(s)` : ''}`,
+        [
+            {
+                text: 'Cancel',
+                style: 'cancel',
+            },
+            {
+                text: 'OK',
+                onPress: async () => {
+                    try {
+                        await applyChanges();
+                    } catch (error) {
+                        console.error(error);
+                        Alert.alert('Error!', 'There is an error occurs! Please, try again later!');
+                    }
+                },
+            },
+        ],
+        { cancelable: false }
+        );
     }
     
     if (isLoading)
@@ -162,6 +186,9 @@ const EditCarImages = () => {
                     title: `${carName} images`,
                 }}
             />
+            
+            {(currentImages.length > 0 || addedImages.length > 0) &&
+            <Text style={GlobalStyles.label} >{carName} has {currentImages.length + addedImages.length} image(s)</Text>}
 
             <View style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flex: 7, width: width}}>
             { currentImages.length > 0 || addedImages.length > 0 ?
@@ -206,7 +233,9 @@ const EditCarImages = () => {
                     <Btn style={styles.button} text='Delete' onPress={deleteImage} color={'rgb(255, 50, 70)'} />
                 </>
                 }
-                <Btn style={styles.button} text='Apply Changes' onPress={applyChanges} />
+                {(addedImages.length > 0 || deletedImages.length > 0) &&
+                
+                <Btn style={styles.button} text='Apply Changes' onPress={confirmChanges} />}
             </View>
 
 
