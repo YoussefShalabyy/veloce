@@ -17,7 +17,8 @@ export default function EditCarLayout() {
                     options={{
                     headerShown: false,
                     tabBarIcon: ({ color }) => <FontAwesome name="pencil" size={30} color={color} />,
-                    title: 'Edit basic info'
+                    title: 'Edit basic info',
+                    tabBarHideOnKeyboard: true,
                 }}/>
                 <Tabs.Screen
                     name="editImages"
