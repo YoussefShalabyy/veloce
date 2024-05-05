@@ -7,15 +7,19 @@ import GlobalStyles from "../../style/global";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Brand from "../../controllers/Brand";
 import Car from "../../controllers/Car";
+import Loading from "../../components/Loading";
+import Colors from "../../constants/Colors";
 
 const EditCar = () => {
+    const { width, height } = useWindowDimensions();
+
     const { id } = useLocalSearchParams();
     const car = new Car(id);
 
+    const [isLoading, setIsLoading] = useState(true);
     const [brands, setBrands] = useState([]);
     const [carData, setCarData] = useState(null);
     const [updatedCarData, setUpdatedCarData] = useState(null);
-    const { width, height } = useWindowDimensions();
 
     console.log(carData);
 
@@ -106,44 +110,76 @@ const EditCar = () => {
         },
     ]
 
-    const updateCar = () => {
-        if (updatedCarData != null) {
-            car.update(updatedCarData)
-            .then(carId => console.log(`Car with id ${carId} is updated!`))
-            .catch(error => console.log(error));
+    const getCar = async () => {
+        try {
+            const carData = await car.get();
+            setCarData(carData); 
+            await AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }));
+        } catch (error) {
+            console.log(error);
         }
-
-        AsyncStorage.removeItem('car')
-                .then(() => console.log("The car was romoved from AasyncStorage!"))
-                .catch(error => console.log(error));
-                
-        router.replace(`/`);
     }
 
-    const deleteCar = () => {
-        car.delete()
-        .then(carId => {
+    const getBrands = async () => {
+        try {
+            const brands = await Brand.getBrands();
+            setBrands(brands);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getData = async () => {
+        try {
+            setIsLoading(true);
+            await getCar();
+            await getBrands();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    const updateCar = async () => {
+        try {
+            if (updatedCarData != null) {
+                setIsLoading(true);
+                const carId = await car.update(updatedCarData);
+                console.log(`Car with id ${carId} is updated!`);
+            }
+    
+            await AsyncStorage.removeItem('car');
+            console.log("The car was romoved from AasyncStorage!");
+                    
+            router.replace(`/`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const deleteCar = async () => {
+        try {
+            setIsLoading(true);
+            const carId = await car.delete();
             console.log(carId, 'deleted!');
             router.replace('/');
-        })
-        .catch(error => console.log(error));
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
-        car.get()
-        .then(carData => {
-            setCarData(carData); 
-            AsyncStorage.setItem('car', JSON.stringify({ id: id, name: carData.name, images: carData.images }));
-        })
-        .catch(error => console.log(error));
-
-        Brand.getBrands()
-        .then(brands => setBrands(brands))
-        .catch(error => console.log(error));
+        getData();
     }, []);
 
+    if (isLoading)
+        return <Loading />
+
     return (
-        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50 }]}>
+        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50, backgroundColor: Colors.light.whiteBackground, }]}>
             <FlatList
                 data={attributeNames}
                 renderItem={({ item }) => (
