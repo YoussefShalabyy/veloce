@@ -1,4 +1,4 @@
-import { FlatList, Image, Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { Alert, FlatList, Image, Pressable, SafeAreaView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import Btn from "../../components/btn";
 import GlobalStyles from "../../style/global";
 import { StatusBar } from "react-native";
@@ -16,7 +16,7 @@ import { db } from "../../firebase";
 const EditCarImages = () => {
     const { width, height } = useWindowDimensions();
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     
     const [id, setId] = useState('');
     const [carName, setCarName] = useState('');
@@ -32,26 +32,26 @@ const EditCarImages = () => {
     console.log('Added images=', addedImages);
 
     let unsub = null;
-
     useEffect(() => {
         AsyncStorage.getItem('car').then(value => {
             const data = JSON.parse(value);
-            unsub = onSnapshot(doc(db, "cars", data.id), (doc) => {
-                const carData = doc.data();
-                setId(doc.id);
-                setCarName(carData.name);
-                setCurrentImages(carData.images);
-
-                AsyncStorage.setItem('car', JSON.stringify({ id: doc.id, name: carData.name, images: carData.images }))
-                .then(() => console.log("Car is up to date!\n"))
-                .catch(() => console.log('updated failed!\n'))
-                .finally(() => setIsLoading(false));
-            });
-        });
+            if (unsub == null) {
+                unsub = onSnapshot(doc(db, "cars", data.id), (doc) => {
+                    console.log('update______________________________________');
+                    const carData = doc.data();
+                    setId(doc.id);
+                    setCarName(carData.name);
+                    setCurrentImages(carData.images);
+        
+                    AsyncStorage.setItem('car', JSON.stringify({ id: doc.id, name: carData.name, images: carData.images }))
+                    .then(() => console.log("Car is up to date!\n"));
+                });
+            }
+        })
+        .finally(() => setIsLoading(false));
     }, []);
 
     const deleteImage = () => {
-        
         if (addedImages.includes(selectedImage))
         setAddedImages(prevImages => prevImages.filter(img => img !== selectedImage));
         else {
@@ -70,14 +70,29 @@ const EditCarImages = () => {
     }
 
     const addOneImage = async () => {
-        let result = await ImagesPicker.pickOneImage();
-        setAddedImages(prevImages => [...prevImages, result.assets[0].uri]);
+        try {
+            let result = await ImagesPicker.pickOneImage();
+        
+            if (!result.canceled && result.assets != undefined)
+                setAddedImages(prevImages => [...prevImages, result.assets[0].uri]);   
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'There is an error occurs when adding a new image! Please, try again!');
+        }
     }
 
     const addImages = async () => {
-        let result = await ImagesPicker.pickImages();
-        const pickedImages = result.assets.map((asset) => asset.uri);
-        setAddedImages(prevImages => [...prevImages, ...pickedImages]);
+        try {
+            let result = await ImagesPicker.pickImages();
+        
+            if (!result.canceled && result.assets != undefined) {
+                const pickedImages = result.assets.map(asset => asset.uri);
+                setAddedImages(prevImages => [...prevImages, ...pickedImages]);
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'There is an error occurs when adding new images! Please, try again!');
+        }
     };
 
     const replaceImage = async () => {
@@ -95,51 +110,40 @@ const EditCarImages = () => {
     }
 
     const applyDeleteImages = async () => {
-        try {
-            if (deletedImages.length > 0)
-                deletedImages.forEach(async img => await deleteImageFromDB(img));
-        } catch (error) {
-            console.log(error);
-        }
+        if (deletedImages.length > 0)
+            deletedImages.forEach(async img => await deleteImageFromDB(img));
     }
     
     const uploadImage = async (img, path) => {
-        try {
-            const car = new Car(id);
-            const image = new StorageImage(path);
-            const url = await image.upload(img);
-            console.log(`The images was uploaded`);
-            await car.addImage(url);
-            console.log(`${url} was added`);
-        } catch (error) {
-            console.log(error);
-        }
+        const car = new Car(id);
+        const image = new StorageImage(path);
+        const url = await image.upload(img);
+        console.log(`The images was uploaded`);
+        await car.addImage(url);
+        console.log(`${url} was added`);
     }
 
     const applyAddImages = async () => {
-        try {
-            if (addedImages.length > 0) {
-                let now = Date.now();
-                addedImages.forEach(async img => {
-                    await uploadImage(img, `communityPost/${now++}.jpg`);
-                });
-            }
-        } catch (error) {
-            console.log(error);
+        if (addedImages.length > 0) {
+            let now = Date.now();
+            addedImages.forEach(async img => {
+                await uploadImage(img, `communityPost/${now++}.jpg`);
+            });
         }
     }
     
     const applyChanges = async () => {
         try {
-            setIsLoading(true);
-            
-            await applyDeleteImages()
+            await applyDeleteImages();
             setDeletedImages([]);
-
+            
             await applyAddImages();
             setAddedImages([]);
+
+            setIsLoading(false);
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            Alert.alert('Error!', 'There is an error occurs! Please, try again later!');
         }
     }
     
