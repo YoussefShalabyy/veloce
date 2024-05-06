@@ -60,10 +60,6 @@ const EditCarField = ({
 
 const styles = StyleSheet.create({
     field: {
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
         marginVertical: 10
     },
 
@@ -74,7 +70,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.dark.backgroundcolor,
         borderRadius: 100,
         fontSize: 20,
-        flex: 2.5,
+        flex: 1.5,
     },
 
     selectBox: {

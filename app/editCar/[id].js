@@ -1,4 +1,4 @@
-import { FlatList, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
+import { ScrollView, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
@@ -171,6 +171,19 @@ const EditCar = () => {
         }
     }
 
+    const fields = attributeNames.map(item =>
+        <EditCarField
+            attributeName={item.name}
+            placeHolder={item.placeHolder}
+            carData={carData}
+            updatedCarDataController={{updatedCarData, setUpdatedCarData}}
+            flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
+            multiline={item.name === 'description' ? true : false}
+            choices={item.name === 'brand' ? brands : []}
+            key={item.name + 'Attr'}
+        />
+    );
+
     useEffect(() => {
         getData();
     }, []);
@@ -179,22 +192,10 @@ const EditCar = () => {
         return <Loading />
 
     return (
-        <SafeAreaView style={[GlobalStyles.container, {width: width, height: height - 50, backgroundColor: Colors.light.whiteBackground, }]}>
-            <FlatList
-                data={attributeNames}
-                renderItem={({ item }) => (
-                    <EditCarField
-                        attributeName={item.name}
-                        placeHolder={item.placeHolder}
-                        carData={carData}
-                        updatedCarDataController={{updatedCarData, setUpdatedCarData}}
-                        flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
-                        multiline={item.name === 'description' ? true : false}
-                        choices={item.name === 'brand' ? brands : []}
-                    />
-                )}
-                style={{ flex: 1, width: width, paddingHorizontal: 10 }}
-            />
+        <SafeAreaView style={[GlobalStyles.container, {width: width, backgroundColor: Colors.light.whiteBackground, }]}>
+            <ScrollView style={{ flex: 1, width: width, paddingHorizontal: 10 }} >
+                {fields}
+            </ScrollView>
 
             <View style={styles.buttons}>
                 <Btn style={styles.button} text='Update' onPress={updateCar} />
@@ -211,7 +212,6 @@ export default EditCar;
 const styles = StyleSheet.create({
     buttons: {
         flex: .1,
-        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center'
