@@ -2,7 +2,7 @@ import Colors from "../constants/Colors";
 
 const GlobalStyles = {
     container: {
-        display: 'flex',
+        flex: 1,
         backgroundColor: Colors.light.backgroundcolor,
         alignItems: 'center',
         justifyContent: 'center',
