@@ -20,11 +20,12 @@ import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import Colors from "../../constants/Colors";
+import BottomNavBar from "../../components/BottomNavBar";
 
 export default function Add() {
   const [brandList, setBrandList] = useState([]);
   const [images, setImages] = useState([]);
-  const [loading, setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getBrandList = async () => {
     const querySnapshot = await getDocs(collection(db, "Brand"));
@@ -47,24 +48,23 @@ export default function Add() {
       quality: 1,
       multiple: true, // Enable multiple selection
     });
-  
+
     if (!result.cancelled) {
       const newImages = result.assets.map((asset) => asset.uri);
       setImages((prevImages) => [...prevImages, ...newImages]);
     }
   };
   const handleOnSubmit = async (values) => {
-    
     if (!values.name) {
       alert("Must Add Name");
       return;
     }
     setLoading(true);
-  
+
     try {
       const storage = getStorage();
       const downloadUrls = [];
-  
+
       for (const image of images) {
         const response = await fetch(image);
         const blob = await response.blob();
@@ -73,13 +73,12 @@ export default function Add() {
         const downloadUrl = await getDownloadURL(snapshot.ref);
         downloadUrls.push(downloadUrl);
       }
-  
+
       values.images = downloadUrls;
-  
+
       try {
         const docRef = await addDoc(collection(db, "cars"), values);
         if (docRef.id) {
-          
           setLoading(false);
           setImages([]);
           alert("added....!!");
@@ -93,12 +92,11 @@ export default function Add() {
     }
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.innerContainer}>
         <Text style={styles.heading}>Add New Car</Text>
-        <ScrollView>
+        <ScrollView style={styles.FormView}>
           <Formik
             initialValues={{
               name: "",
@@ -300,13 +298,17 @@ export default function Add() {
                     styles.submitButton,
                   ]}
                 >
-                  {loading?(<ActivityIndicator color='#fff'/>):( <Text style={styles.submitButtonText}>Submit</Text>)}
-                 
+                  {loading ? (
+                    <ActivityIndicator color="#fff" />
+                  ) : (
+                    <Text style={styles.submitButtonText}>Submit</Text>
+                  )}
                 </Pressable>
               </View>
             )}
           </Formik>
         </ScrollView>
+        <BottomNavBar CurrentScreen={"addItem"} />
       </View>
     </SafeAreaView>
   );
@@ -314,26 +316,40 @@ export default function Add() {
 
 const styles = StyleSheet.create({
   container: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    paddingTop: 40,
+    minWidth: "100%",
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.light.whiteBackground,
+    alignItems: "center",
   },
   innerContainer: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    minWidth: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
   },
   heading: {
     fontWeight: "bold",
     fontSize: 25,
     marginBottom: 20,
   },
+  FormView: {
+    minWidth: "100%",
+    paddingHorizontal: 20,
+    marginBottom: 70,
+  },
   formContainer: {
     flex: 1,
+    width: "100%",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    borderColor: Colors.dark.backgroundcolor,
+    borderRadius: 100,
     paddingVertical: 10,
     paddingHorizontal: 15,
     marginBottom: 20,

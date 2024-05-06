@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   SafeAreaView,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
@@ -13,8 +14,9 @@ import { db } from "../../firebase";
 import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
 import Profile from "../../assets/Profile.png";
-import EngineIcon from "../../assets/EngineIcon.png";
-import GasStationIcon from "../../assets/GasStationIcon.png";
+import { router } from "expo-router";
+import { Route } from "expo-router/build/Route";
+import CarDisplayer from "../../components/CarsDisplayer";
 
 export default function HomePage() {
   const [cars, setCars] = useState([]);
@@ -49,7 +51,9 @@ export default function HomePage() {
         <View name="HeaderRowView" style={styles.HeaderView}>
           <View>
             <Text style={styles.WelcomeText}>Welcome</Text>
-            <Text style={styles.UserName}>Abdelrahman</Text>
+            <Text style={styles.UserName} numberOfLines={1} overflow="hidden">
+              Abdelrahman
+            </Text>
           </View>
           <View style={styles.ProfileView}>
             <Image source={Profile} style={styles.ProfileIcon} />
@@ -59,76 +63,50 @@ export default function HomePage() {
           <View>
             <Text style={styles.CategoryText}>Categories</Text>
           </View>
-          <View>
+          <View style={styles.LowerView}>
             <FlatList
               horizontal
               data={brands}
               showsHorizontalScrollIndicator={false}
               renderItem={({ item }) => (
-                <View style={styles.CategoryItem}>
-                  <Image
-                    source={{ uri: item.logo }}
-                    style={styles.categoryImage}
-                  />
-                  <View
-                    style={[styles.itemName, { backgroundColor: item.color }]}
-                  >
-                    <Text
-                      style={{ fontSize: 25, fontWeight: "400" }}
-                      numberOfLines={1}
+                <Pressable
+                  style={styles.CategoryItem}
+                  onPress={() => {
+                    router.push("../category/" + item.name);
+                    Route.params = {
+                      item: item,
+                    };
+                  }}
+                >
+                  <View style={styles.OneItemContainer}>
+                    <Image
+                      source={{ uri: item.logo }}
+                      style={[
+                        styles.categoryImage,
+                        { width: item.name === "Porsche" ? 200 : 50 },
+                        { height: item.name === "Porsche" ? 55 : 50 },
+                        
+                      ]}
+                    />
+                    <View
+                      style={[styles.itemName, { backgroundColor: item.color }]}
                     >
-                      {item.name}
-                    </Text>
+                      <Text
+                        style={{ fontSize: 25, fontWeight: "400" , color: Colors.dark.backgroundcolor}}
+                        numberOfLines={1}
+                      >
+                        {item.name}
+                      </Text>
+                    </View>
                   </View>
-                </View>
+                </Pressable>
               )}
               keyExtractor={(item, index) => index.toString()} // Added keyExtractor
             />
           </View>
         </View>
-        <FlatList
-          style={styles.list}
-          data={cars}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <View style={styles.CarHeader}>
-                <Text style={styles.carName}>{item.name}</Text>
-              </View>
-
-              {item.images && item.images.length > 0 && (
-                <Image
-                  source={{ uri: item.images[0] }} // Display the first image from the array
-                  style={styles.image}
-                />
-              )}
-
-              {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
-
-              <View style={styles.CarInfo}>
-                <View style={styles.CarInfoLeftSection}>
-                  <View style={styles.LeftCarInfoItemView}>
-                    <Image source={GasStationIcon} style={styles.CarItemIcon} />
-                    <Text style={styles.CarItemInfoText}>
-                      {item.fuelEfficiency}
-                    </Text>
-                  </View>
-                  <View style={styles.LeftCarInfoItemView}>
-                    <Image source={EngineIcon} style={styles.CarItemIcon} />
-                    <Text style={styles.CarItemInfoText}>
-                      {item.horsePower} HP
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.CarInfoRightSection}>
-                  <Text style={styles.ItemPrice}>${item.price}</Text>
-                </View>
-              </View>
-            </View>
-          )}
-          keyExtractor={(item, index) => index.toString()} // Added keyExtractor
-        />
-        <BottomNavBar />
+        {cars.length !== 0 && <CarDisplayer cars={cars} />}
+        <BottomNavBar CurrentScreen={"homePage"} />
       </View>
     </SafeAreaView>
   );
@@ -187,20 +165,32 @@ const styles = StyleSheet.create({
   },
   CategoriesView: {
     marginTop: 20,
-    maxHeight: 90,
+    minHeight: 140,
+    maxHeight: 140,
     marginLeft: 12,
+    justifyContent: "space-between",
   },
   CategoryItem: {
     borderRadius: 10,
     marginHorizontal: 10,
+    flexDirection: "column",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  OneItemContainer: {
     justifyContent: "flex-end",
     alignItems: "center",
-    flexDirection: "column",
-    minWidth: 100,
+    minHeight: 90,
+    maxHeight: 90,
+    marginBottom: 10,
   },
   categoryImage: {
-    width: 50,
-    height: 50,
     resizeMode: "contain",
     zIndex: 1,
     alignSelf: "center",
@@ -212,6 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 25,
     fontWeight: "600",
+    color: Colors.dark.backgroundcolor,
   },
   itemName: {
     alignItems: "center",
@@ -224,10 +215,11 @@ const styles = StyleSheet.create({
     minWidth: 100,
     maxWidth: 100,
   },
-
+  LowerView: {
+    width: "100%",
+  },
   list: {
     width: "100%",
-    marginTop: 50,
     marginBottom: 35,
   },
   item: {
