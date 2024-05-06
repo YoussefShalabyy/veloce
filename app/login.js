@@ -13,12 +13,30 @@ import { router } from "expo-router";
 import Colors from "../constants/Colors";
 import googleIcon from "../assets/googleIcon.png";
 import facebookIcon from "../assets/facebookIcon.png";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../firebase';
 
 export default function () {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const handelForgetPassword = ()=> {
+    router.navigate("forgetpassword");
+  };
   const handleDontHaveAcc = () => {
     router.navigate("register");
+  };
+  const handelSignIn =() => {
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+        //navigation.navigate("Profile");
+        const user = userCredential.user;
+       // console.log(auth.currentUser.uid);
+       router.navigate("homePage");
+       
+    })
+    .catch((error) => {
+        alert("Invalid Email Or Password. Please Enter Again");
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -26,7 +44,7 @@ export default function () {
         <Text style={styles.heading}>Veloce</Text>
         <Text style={styles.subHeading}>Login</Text>
         <Input
-          placeHolder="Username"
+          placeHolder="Email"
           onChangeText={setEmail}
           value={email}
           style={styles.Input}
@@ -38,24 +56,15 @@ export default function () {
           secureTextEntry={true}
           style={styles.Input}
         />
-        <Btn text="Login" style={styles.loginBtn} />
-        <Text style={styles.loginWithText}>Or Sign in with</Text>
-        <View style={styles.rowView}>
-          <TouchableOpacity style={styles.loginGoogleButton}>
-            <Image source={googleIcon} style={styles.loginWithIcon} />
-            <Text style={styles.loginGoogleText}>Google</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.loginFacebookButton}>
-            <Image source={facebookIcon} style={styles.loginWithIcon} />
-            <Text style={styles.loginFacebookText}>Facebook</Text>
-          </TouchableOpacity>
-        </View>
+        <Btn text="Login" style={styles.loginBtn} onPress={handelSignIn}/>
+       
 
         <View style={styles.lowerSection}>
           <Btn
             type="Link"
             text="Forgot Password?"
             style={styles.forgetPassword}
+            onPress={handelForgetPassword}
           />
           <Btn
             text="Don't Have An Account? Register"
@@ -108,7 +117,7 @@ const styles = StyleSheet.create({
   },
   loginBtn: {
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 1,
     maxHeight: 60,
     backgroundColor: Colors.main.backgroundcolor,
     fontSize: 18,
@@ -172,7 +181,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundcolor,
     fontSize: 16,
     minWidth: "100%",
-    marginTop: 10,
+    marginTop: 1,
     maxHeight: 40,
     minHeight: 40,
     padding: -5,
