@@ -140,7 +140,7 @@ export default function LoginPage() {
         <Text style={styles.heading}>Veloce</Text>
         <Text style={styles.subHeading}>Login</Text>
         <Input
-          placeHolder="Username"
+          placeHolder="Email"
           onChangeText={setEmail}
           value={email}
           style={styles.Input}
@@ -174,6 +174,7 @@ export default function LoginPage() {
             type="Link"
             text="Forgot Password?"
             style={styles.forgetPassword}
+            onPress={handelForgetPassword}
           />
           <Btn
             text="Don't Have An Account? Register"
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundcolor,
     fontSize: 16,
     minWidth: "100%",
-    marginTop: 10,
+    marginTop: 1,
     maxHeight: 40,
     minHeight: 40,
     padding: -5,

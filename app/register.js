@@ -31,6 +31,32 @@ export default function register() {
   };
 
   const handleRegister = () => {
+    if (!name) {
+      setError("Please enter Username");
+      return;
+    }
+    if (!email) {
+      setError("Please enter Email");
+      return;
+    }
+    if (!phone) {
+      setError("Please enter Phone");
+      return;
+    }
+    if (!password) {
+      setError("Please enter Password");
+      return;
+    }
+    if (!confirmPassword) {
+      setError("Please enter Confirm Password");
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+  
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -39,13 +65,7 @@ export default function register() {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        if (email.length === 0 && password.length === 0) {
-          setError("Please Enter Username And Password");
-        } else {
-          setError(errorCode);
-        }
+        setError(errorCode);
       });
   };
 
@@ -146,6 +166,7 @@ export default function register() {
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
