@@ -6,6 +6,7 @@ export default {
   main: {
     text: "#000",
     backgroundcolor: "#262526",
+    orange : "#FFA500",
     // #E2FF66
     tint: mainColor,
     tabIconDefault: "#ccc",

@@ -1,25 +1,139 @@
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Image,
+  ActivityIndicator,
 } from "react-native";
-import { React, useState } from "react";
 import Input from "../components/input";
 import Btn from "../components/btn";
-import { router } from "expo-router";
+import { router } from "expo-router"; // Make sure you have imported the router correctly
 import Colors from "../constants/Colors";
-import googleIcon from "../assets/googleIcon.png";
-import facebookIcon from "../assets/facebookIcon.png";
+import { login } from "../firebase"; // Assuming you have a working login function
+import { auth, db } from "../firebase";
+import {
+  getDocs,
+  query,
+  collection,
+  where,
+  getDoc,
+  doc,
+} from "firebase/firestore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function () {
+export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkLoggedIn = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem("@rememberUser");
+        console.log("Stored user:", storedUser);
+        if (storedUser) {
+          const { email, password } = JSON.parse(storedUser);
+          setEmail(email);
+          setPassword(password);
+          login(email, password)
+            .then(async (userCredential) => {
+              await getCurrentUserDocId();
+              console.log("Logged in successfully");
+            })
+            .catch((error) => {
+              const errorMessage = error.message;
+              alert(errorMessage);
+            });
+        }
+        else {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error checking login status:", error);
+        AsyncStorage.removeItem("@rememberUser");
+      }
+    };
+    checkLoggedIn();
+  }, []);
+
   const handleDontHaveAcc = () => {
     router.navigate("register");
   };
+
+  const getCurrentUserDocId = async () => {
+    try {
+      const q = query(
+        collection(db, "users"),
+        where("userID", "==", auth.currentUser.uid)
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        console.log("No documents found for userID:", auth.currentUser.uid);
+        return;
+      }
+      querySnapshot.forEach((doc) => {
+        console.log("Document found with ID:", doc.id);
+        getUser(doc.id);
+      });
+    } catch (error) {
+      console.error("Error getting documents: ", error);
+    }
+  };
+
+  const getUser = async (userDocId) => {
+    try {
+      const docRef = doc(db, "users", userDocId);
+      const docSnapshot = await getDoc(docRef);
+      if (docSnapshot.exists()) {
+        const userData = docSnapshot.data();
+        console.log("User data:", userData);
+        if (userData.isAdmin) {
+          router.navigate("homePage"); // Replace with the correct screen name
+          console.log("User is admin");
+        } else {
+          router.navigate("homePage"); // Replace with the correct screen name
+          console.log("User is not admin");
+        }
+      } else {
+        console.log("No such document!");
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  };
+
+  const handleLogin = () => {
+    login(email, password)
+      .then(async (userCredential) => {
+        await getCurrentUserDocId();
+        console.log("Logged in successfully");
+        await AsyncStorage.setItem(
+          "@rememberUser",
+          JSON.stringify({ email, password })
+        );
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        alert(errorMessage);
+      });
+  };
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.innerContainer}>
+          <ActivityIndicator
+            size="large"
+            color={Colors.light.backgroundcolor}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.innerContainer}>
@@ -38,8 +152,12 @@ export default function () {
           secureTextEntry={true}
           style={styles.Input}
         />
-        <Btn text="Login" style={styles.loginBtn} />
-        <Text style={styles.loginWithText}>Or Sign in with</Text>
+
+        <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+          <Text style={styles.loginBtnText}>Login</Text>
+        </TouchableOpacity>
+
+        {/* <Text style={styles.loginWithText}>Or Sign in with</Text>
         <View style={styles.rowView}>
           <TouchableOpacity style={styles.loginGoogleButton}>
             <Image source={googleIcon} style={styles.loginWithIcon} />
@@ -49,7 +167,7 @@ export default function () {
             <Image source={facebookIcon} style={styles.loginWithIcon} />
             <Text style={styles.loginFacebookText}>Facebook</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <View style={styles.lowerSection}>
           <Btn
@@ -77,7 +195,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     minWidth: "100%",
     flex: 1,
-    backgroundColor: Colors.dark.backgroundcolor,
+    backgroundColor: Colors.main.backgroundcolor,
     alignItems: "center",
   },
   innerContainer: {
@@ -107,10 +225,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.backgroundcolor,
   },
   loginBtn: {
-    marginTop: 10,
-    marginBottom: 20,
-    maxHeight: 60,
-    backgroundColor: Colors.main.backgroundcolor,
+    backgroundColor: Colors.light.backgroundcolor,
+    minWidth: "100%",
+    maxWidth: "100%",
+    borderRadius: 100,
+    height: 60,
+    marginVertical: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loginBtnText: {
+    color: Colors.dark.backgroundcolor,
     fontSize: 18,
   },
   loginWithText: {

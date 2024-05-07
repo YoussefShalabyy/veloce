@@ -3,9 +3,10 @@ import React from "react";
 import Welcome from "./welcome";
 import Add from "./(tabs)/addItem";
 import HomePage from "./(tabs)/homePage";
+import Login from "./login";
 
 export default function index() {
-  return <HomePage />;
+  return <Login />;
 }
 
 const styles = StyleSheet.create({

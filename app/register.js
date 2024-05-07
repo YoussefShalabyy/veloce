@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet , SafeAreaView} from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+  ScrollView,
+} from "react-native";
 import React, { useState } from "react";
 import Input from "../components/input";
 import Btn from "../components/btn";
@@ -6,25 +13,29 @@ import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import Colors from "../constants/Colors";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setconfirmPassword] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [street, setStreet] = useState("");
+  const [region, setRegion] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
 
-
-  const handleAlreadyHasAcc = () => {
+  const handleAlreadyHaveAcc = () => {
     router.navigate("login");
   };
+
   const handleRegister = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        console.log("Doneeeeeeeeeeeee!");
         const user = userCredential.user;
-        router.navigate('homePage');
-        // ...
+        router.replace("login");
+        AddUserTOFirestore(user, phoneNumber, name);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -37,42 +48,101 @@ export default function register() {
         }
       });
   };
+
+  const AddUserTOFirestore = async (user, phoneNumber, name) => {
+    try {
+      await addDoc(collection(db, "users"), {
+        userID: user.uid,
+        email: user.email,
+        name: name,
+        phoneNumber: phoneNumber,
+        isAdmin: false,
+        street: street,
+        region: region,
+      });
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.innerContainer}>
-      <Input
-        placeHolder="Username"
-        onChangeText={setName}
-        value={name}
-        style={styles.Input}
-      />
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+        style={{ width: "100%" }}
+      >
+        <View style={styles.innerContainer}>
+          <Text style={styles.heading}>Veloce</Text>
+          <Text style={styles.subHeading}>Register</Text>
+          <Input
+            placeHolder="Username"
+            onChangeText={setName}
+            value={name}
+            style={styles.Input}
+          />
 
-      <Input placeHolder="Email" onChangeText={setEmail} value={email}  style={styles.Input} />
-      <Input
-        placeHolder="Password"
-        onChangeText={setPassword}
-        value={password}
-        secureTextEntry={true}
-        style={styles.Input}
-      />
-      <Input
-        placeHolder="Confirm Password"
-        onChangeText={setconfirmPassword}
-        value={confirmpassword}
-        secureTextEntry={true}
-        style={styles.Input}
-      />
-      <Btn text="Register" style={styles.registerBtn} onPress={handleRegister} />
-      <Btn
-        text="Already Has An Account? Login"
-        type="Link"
-        style={styles.btn2}
-        fontSize={29}
-        textColor="#0077B6"
-        onPress={handleAlreadyHasAcc}
-      />
-      <Text style={styles.error}>{error}</Text>
-    </View>
+          <Input
+            placeHolder="Email"
+            onChangeText={setEmail}
+            value={email}
+            style={styles.Input}
+          />
+          <Input
+            placeHolder="Phone Number"
+            onChangeText={setPhoneNumber}
+            value={phoneNumber}
+            style={styles.Input}
+          />
+          <Input
+            placeHolder="Password"
+            onChangeText={setPassword}
+            value={password}
+            secureTextEntry={true}
+            style={styles.Input}
+          />
+          <Input
+            placeHolder="Confirm Password"
+            onChangeText={setconfirmPassword}
+            value={confirmpassword}
+            secureTextEntry={true}
+            style={styles.Input}
+          />
+          <Input
+            placeHolder="Street"
+            onChangeText={setStreet}
+            value={street}
+            style={styles.Input}
+          />
+          <Input
+            placeHolder="Region"
+            onChangeText={setRegion}
+            value={region}
+            style={styles.Input}
+          />
+
+          <Btn
+            text="Register"
+            style={styles.registerBtn}
+            onPress={() => {
+              if (password === confirmpassword) {
+                handleRegister();
+              } else {
+                Alert.alert("Password Does Not Match");
+              }
+            }}
+          />
+          <View style={styles.lowerSection}>
+            <Btn
+              text="Already Have An Account? Login"
+              style={styles.linkBtn}
+              onPress={handleAlreadyHaveAcc}
+            />
+          </View>
+
+          <Text style={styles.error}>{error}</Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -89,13 +159,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.dark.backgroundcolor,
     alignItems: "center",
   },
-  innerContainer:{
+  innerContainer: {
     padding: 20,
     flex: 1,
     minWidth: "100%",
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
+  },
+  heading: {
+    color: Colors.light.backgroundcolor,
+    fontSize: 60,
+    fontWeight: "bold",
+  },
+  subHeading: {
+    fontSize: 18,
+    marginVertical: 20,
+    color: Colors.light.backgroundcolor,
   },
   btn2: {
     width: "100%",
@@ -117,7 +197,25 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     maxHeight: 60,
-    backgroundColor: Colors.main.backgroundcolor,
+    backgroundColor: Colors.light.backgroundcolor,
     fontSize: 18,
+  },
+  lowerSection: {
+    position: "absolute",
+    bottom: 0,
+    minWidth: "100%",
+    flex: 1,
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  linkBtn: {
+    backgroundColor: Colors.light.backgroundcolor,
+    fontSize: 16,
+    minWidth: "300",
+    maxWidth: "300",
+    maxHeight: 40,
+    minHeight: 40,
+    padding: -5,
   },
 });

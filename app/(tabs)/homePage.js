@@ -7,10 +7,11 @@ import {
   StyleSheet,
   SafeAreaView,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
 import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
 import Profile from "../../assets/Profile.png";
@@ -20,18 +21,20 @@ import CarDisplayer from "../../components/CarsDisplayer";
 
 export default function HomePage() {
   const [cars, setCars] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const currentUserId = auth.currentUser;
 
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, "cars"));
     const fetchedCars = [];
     querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-      console.log(doc.id, " => ", doc.data());
       fetchedCars.push(doc.data());
     });
     setCars(fetchedCars);
   };
-  const [brands, setBrands] = useState([]);
+
   const getBrands = async () => {
     const querySnapshot = await getDocs(collection(db, "Brand"));
     setBrands([]);
@@ -44,6 +47,25 @@ export default function HomePage() {
     getData();
     getBrands();
   }, []);
+
+  useEffect(() => {
+    const checkDataLoaded = async () => {
+      if (brands.length == [] && cars.length == []) {
+        setLoading(false);
+      }
+    };
+    checkDataLoaded();
+  }, [cars]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.innerContainer}>
+          <ActivityIndicator size="large" color={Colors.main.backgroundcolor} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,14 +107,17 @@ export default function HomePage() {
                         styles.categoryImage,
                         { width: item.name === "Porsche" ? 200 : 50 },
                         { height: item.name === "Porsche" ? 55 : 50 },
-                        
                       ]}
                     />
                     <View
                       style={[styles.itemName, { backgroundColor: item.color }]}
                     >
                       <Text
-                        style={{ fontSize: 25, fontWeight: "400" , color: Colors.dark.backgroundcolor}}
+                        style={{
+                          fontSize: 25,
+                          fontWeight: "400",
+                          color: Colors.dark.backgroundcolor,
+                        }}
                         numberOfLines={1}
                       >
                         {item.name}
