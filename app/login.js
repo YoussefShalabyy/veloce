@@ -105,6 +105,10 @@ export default function LoginPage() {
     }
   };
 
+  const handelForgetPassword = () => {
+    router.navigate("forgetPassword");
+  };
+
   const handleLogin = () => {
     login(email, password)
       .then(async (userCredential) => {
