@@ -308,7 +308,6 @@ export default function Add() {
             )}
           </Formik>
         </ScrollView>
-        <BottomNavBar CurrentScreen={"addItem"} />
       </View>
     </SafeAreaView>
   );
