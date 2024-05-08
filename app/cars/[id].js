@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { useEffect } from "react";
 import Colors from "../../constants/Colors";
@@ -52,6 +53,10 @@ export default function OneCar() {
   );
   const handleAddToRentList = async () => {
     try {
+      if (numberOfDays == 0) {
+        Alert.alert("Please Enter The number of days");
+        return;
+      }
       const userId = auth.currentUser.uid;
       const docRef = doc(db, "rents", userId);
       const carRef = collection(docRef, "cars");
@@ -62,12 +67,15 @@ export default function OneCar() {
         numberOfDays,
         item,
       });
-      console.log("item.id",item.id)
+      console.log("item.id", item.id);
       console.log("new Car id", newDoc.id);
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setToggled(!toggled);
+      Alert.alert("Added..!");
     } catch (error) {
       console.log(error);
     }
-   
   };
   useEffect(() => {
     createUserIfNotExist();
@@ -80,7 +88,7 @@ export default function OneCar() {
       });
       console.log("added A User With Id:", userId);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   };
 
