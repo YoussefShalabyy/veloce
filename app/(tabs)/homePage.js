@@ -24,13 +24,14 @@ export default function HomePage() {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const currentUserId = auth.currentUser;
 
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, "cars"));
     const fetchedCars = [];
     querySnapshot.forEach((doc) => {
-      fetchedCars.push(doc.data());
+      const carData = doc.data();
+      carData.docId = doc.id;
+      fetchedCars.push(carData);
     });
     setCars(fetchedCars);
   };

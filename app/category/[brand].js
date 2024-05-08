@@ -17,7 +17,7 @@ import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
 import { Route } from "expo-router/build/Route";
 import CarsDisplayer from "../../components/CarsDisplayer";
-import Btn from "../../components/btn";
+
 
 export default function Category({ route }) {
   const [cars, setCars] = useState([]);

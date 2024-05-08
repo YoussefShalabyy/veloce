@@ -1,8 +1,17 @@
 import React from "react";
-import { View, Text, Image, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import Colors from "../constants/Colors";
 import EngineIcon from "../assets/EngineIcon.png";
 import GasStationIcon from "../assets/GasStationIcon.png";
+import { router } from "expo-router";
+import { Route } from "expo-router/build/Route";
 
 const CarDisplayer = ({ cars }) => (
   <FlatList
@@ -11,34 +20,45 @@ const CarDisplayer = ({ cars }) => (
     showsVerticalScrollIndicator={false}
     renderItem={({ item }) => (
       <View style={styles.item}>
-        <View style={styles.CarHeader}>
-          <Text style={styles.carName}>{item.name}</Text>
-        </View>
+        <TouchableOpacity
+          onPress={() => {
+            router.replace("cars/" + item.id);
+            Route.params = {
+              item: item,
+            };
+          }}
+        >
+          <View style={styles.CarHeader}>
+            <Text style={styles.carName}>{item.name}</Text>
+          </View>
 
-        {item.images && item.images.length > 0 && (
-          <Image
-            source={{ uri: item.images[0] }} // Display the first image from the array
-            style={styles.image}
-          />
-        )}
+          {item.images && item.images.length > 0 && (
+            <Image
+              source={{ uri: item.images[0] }} // Display the first image from the array
+              style={styles.image}
+            />
+          )}
 
-        {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
+          {/* <Image source={{ uri: item.image }} style={styles.image} /> */}
 
-        <View style={styles.CarInfo}>
-          <View style={styles.CarInfoLeftSection}>
-            <View style={styles.LeftCarInfoItemView}>
-              <Image source={GasStationIcon} style={styles.CarItemIcon} />
-              <Text style={styles.CarItemInfoText}>{item.fuelEfficiency}</Text>
+          <View style={styles.CarInfo}>
+            <View style={styles.CarInfoLeftSection}>
+              <View style={styles.LeftCarInfoItemView}>
+                <Image source={GasStationIcon} style={styles.CarItemIcon} />
+                <Text style={styles.CarItemInfoText}>
+                  {item.fuelEfficiency}
+                </Text>
+              </View>
+              <View style={styles.LeftCarInfoItemView}>
+                <Image source={EngineIcon} style={styles.CarItemIcon} />
+                <Text style={styles.CarItemInfoText}>{item.horsePower} HP</Text>
+              </View>
             </View>
-            <View style={styles.LeftCarInfoItemView}>
-              <Image source={EngineIcon} style={styles.CarItemIcon} />
-              <Text style={styles.CarItemInfoText}>{item.horsePower} HP</Text>
+            <View style={styles.CarInfoRightSection}>
+              <Text style={styles.ItemPrice}>${item.price}/Day</Text>
             </View>
           </View>
-          <View style={styles.CarInfoRightSection}>
-            <Text style={styles.ItemPrice}>${item.price}</Text>
-          </View>
-        </View>
+        </TouchableOpacity>
       </View>
     )}
     keyExtractor={(item, index) => index.toString()} // Added keyExtractor
@@ -127,12 +147,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   CarItemInfoText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: Colors.dark.backgroundcolor,
   },
   ItemPrice: {
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: "bold",
     color: Colors.dark.backgroundcolor,
   },
