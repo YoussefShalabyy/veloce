@@ -57,6 +57,8 @@ export default function OneCar() {
       const carRef = collection(docRef, "cars");
       const newDoc = await addDoc(carRef, {
         totalPrice: numberOfDays * item.price,
+        startDate,
+        endDate,
         numberOfDays,
         item,
       });
