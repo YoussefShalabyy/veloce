@@ -7,19 +7,36 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import Colors from "../../constants/Colors";
 import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { set } from "lodash";
+import { auth, db } from "../../firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 export default function OneCar() {
   const item = Route.params.item;
   console.log(item);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [toggled, setToggled] = useState(false);
+  const [numberOfDays, setNumberOfDays] = useState(0);
+  const NoOfDays = () => {
+    const Ms = endDate.getTime() - startDate.getTime();
+    let Days = Math.abs(Ms) / (1000 * 60 * 60 * 24);
+    if (Days - Math.floor(Days) >= 0.5) {
+      Days = Math.ceil(Days);
+    } else {
+      Days = Math.floor(Days);
+    }
+    setNumberOfDays(Days);
+  };
+  useEffect(() => {
+    NoOfDays();
+  }, [startDate, endDate]);
 
   const InfoItemDisplay = ({ title, value }) => (
     <View style={styles.InfoItem}>
@@ -33,6 +50,37 @@ export default function OneCar() {
       <Text style={styles.InfoItemTitle}>{title}</Text>
     </View>
   );
+  const handleAddToRentList = async () => {
+    try {
+      const userId = auth.currentUser.uid;
+      const docRef = doc(db, "rents", userId);
+      const carRef = collection(docRef, "cars");
+      const newDoc = await addDoc(carRef, {
+        totalPrice: numberOfDays * item.price,
+        numberOfDays,
+        item,
+      });
+      console.log("item.id",item.id)
+      console.log("new Car id", newDoc.id);
+    } catch (error) {
+      console.log(error);
+    }
+   
+  };
+  useEffect(() => {
+    createUserIfNotExist();
+  }, []);
+  const createUserIfNotExist = async () => {
+    const userId = auth.currentUser.uid;
+    try {
+      await setDoc(doc(db, "rents", userId), {
+        userId,
+      });
+      console.log("added A User With Id:", userId);
+    } catch (error) {
+      console.log(error)
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,24 +137,110 @@ export default function OneCar() {
             <InfoHeading title="Price" />
             <InfoItemDisplay title="Price/Day" value={item.price + "$"} />
           </View>
-          <DateTimePicker
-            value={startDate}
-            mode="date"
-            is24Hour={true}
-            display="default"
-            onChange={(event, selectedDate) => {
-              const currentDate = selectedDate || startDate;
-              setStartDate(currentDate);
-            }}
-          />
-          <TouchableOpacity
-            style={styles.bookButton}
-            onPress={() => {
-              router.navigate("booking", { item: item });
-            }}
-          >
-            <Text style={styles.bookButtonText}>Release The Beast</Text>
-          </TouchableOpacity>
+          {toggled ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                width: "90%",
+                alignItems: "center",
+              }}
+            >
+              <DateTimePicker
+                value={startDate}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => {
+                  if (selectedDate < new Date() || selectedDate > endDate) {
+                    if (event.type === "set") {
+                      alert("Invalid date");
+                      setStartDate(new Date());
+                    }
+                    return;
+                  } else {
+                    const currentDate = selectedDate;
+                    setStartDate(currentDate);
+                  }
+                }}
+              />
+              <Text
+                style={{
+                  textAlign: "center",
+                  fontSize: 20,
+                  fontWeight: "bold",
+                }}
+              >
+                To
+              </Text>
+              <DateTimePicker
+                value={endDate}
+                mode="date"
+                is24Hour={true}
+                display="default"
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate;
+                  if (currentDate < new Date() || currentDate < startDate) {
+                    if (event.type === "set") {
+                      alert("Invalid date");
+                      setEndDate(startDate);
+                    }
+                    return;
+                  } else {
+                    setEndDate(currentDate);
+                  }
+                }}
+              />
+            </View>
+          ) : (
+            <View></View>
+          )}
+          {toggled && (
+            <View style={{ marginTop: 10 }}>
+              <InfoItemDisplay
+                title="Number of Days"
+                value={numberOfDays.toString()}
+              />
+              <View>
+                <Text>
+                  Total Price:{" "}
+                  <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                    {numberOfDays * item.price}$
+                  </Text>{" "}
+                </Text>
+              </View>
+            </View>
+          )}
+
+          {toggled ? (
+            <View>
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={handleAddToRentList}
+              >
+                <Text style={styles.bookButtonText}>Add To Rent List</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.bookButton}
+                onPress={() => {
+                  setToggled(!toggled);
+                }}
+              >
+                <Text style={styles.bookButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            //----------------------------------------------------------------
+            <TouchableOpacity
+              style={styles.bookButton}
+              onPress={() => {
+                setToggled(!toggled);
+              }}
+            >
+              <Text style={styles.bookButtonText}>Release The Beast</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
