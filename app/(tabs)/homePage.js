@@ -14,16 +14,70 @@ import { collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import BottomNavBar from "../../components/BottomNavBar";
 import Colors from "../../constants/Colors";
-import Profile from "../../assets/Profile.png";
+import logo from "../../assets/logo.png";
 import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
 import CarDisplayer from "../../components/CarsDisplayer";
+import { where, query, getDoc, doc } from "firebase/firestore";
+import { set } from "lodash";
 
 export default function HomePage() {
   const [cars, setCars] = useState([]);
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState([]);
+  const [userDocId, setUserDocId] = useState("");
+  const userId = auth.currentUser.uid;
+  const [userName, setUserName] = useState("");
 
+  useEffect(() => {
+    const getCurrentUserDocId = async () => {
+      try {
+        console.log("Running query for userID:", userId);
+        const q = query(collection(db, "users"), where("userID", "==", userId));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          console.log("No documents found for userID:", userId);
+          return; // Optionally handle this case
+        }
+        querySnapshot.forEach((doc) => {
+          console.log("Document found with ID:", doc.id);
+          setUserDocId(doc.id);
+        });
+      } catch (error) {
+        console.error("Error getting documents: ", error);
+      }
+    };
+    if (userId) {
+      getCurrentUserDocId();
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    const getUser = async () => {
+      if (!userDocId) return;
+      try {
+        const docRef = doc(db, "users", userDocId);
+        const docSnapshot = await getDoc(docRef);
+        if (docSnapshot.exists()) {
+          console.log("Document data:", docSnapshot.data());
+          setUser(docSnapshot.data());
+          setUserName(docSnapshot.data().name.split(" ")[0]);
+          console.log(userName);
+        } else {
+          console.log("No such document!");
+          setUser([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch product:", error);
+        setUser([]);
+      }
+    };
+
+    if (userDocId) {
+      getUser();
+    }
+  }, [userId, userDocId]);
 
   const getData = async () => {
     const querySnapshot = await getDocs(collection(db, "cars"));
@@ -51,12 +105,12 @@ export default function HomePage() {
 
   useEffect(() => {
     const checkDataLoaded = async () => {
-      if (brands.length == [] && cars.length == []) {
+      if (brands.length != [] && cars.length != [] && userName != "") {
         setLoading(false);
       }
     };
     checkDataLoaded();
-  }, [cars]);
+  }, [brands, cars, userName]);
 
   if (loading) {
     return (
@@ -75,11 +129,11 @@ export default function HomePage() {
           <View>
             <Text style={styles.WelcomeText}>Welcome</Text>
             <Text style={styles.UserName} numberOfLines={1} overflow="hidden">
-              Abdelrahman
+              {userName}
             </Text>
           </View>
           <View style={styles.ProfileView}>
-            <Image source={Profile} style={styles.ProfileIcon} />
+            <Image source={logo} style={styles.ProfileIcon} />
           </View>
         </View>
         <View name="Categories" style={styles.CategoriesView}>
