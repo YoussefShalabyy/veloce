@@ -15,11 +15,14 @@ const BottomNavBar = ({ CurrentScreen, ColorTheme }) => {
       <View style={[styles.container, { borderColor: CurrentColor }]}>
         <TouchableOpacity
           onPress={() => {
-            router.navigate("addItem");
+            router.navigate("(tabs)/search");
           }}
           style={[
             styles.iconWrapper,
-            CurrentScreen === "addItem" && ([styles.activeIcon , {backgroundColor: CurrentColor}]),
+            CurrentScreen === "search" && [
+              styles.activeIcon,
+              { backgroundColor: CurrentColor },
+            ],
           ]}
         >
           <Svg
@@ -32,7 +35,7 @@ const BottomNavBar = ({ CurrentScreen, ColorTheme }) => {
             <Path
               d="M10 4a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm-8 6a8 8 0 1 1 14.32 4.906l5.387 5.387a1 1 0 0 1-1.414 1.414l-5.387-5.387A8 8 0 0 1 2 10z"
               fill={
-                CurrentScreen === "addItem"
+                CurrentScreen === "search"
                   ? Colors.light.backgroundcolor
                   : CurrentColor
               }
@@ -46,7 +49,10 @@ const BottomNavBar = ({ CurrentScreen, ColorTheme }) => {
           }}
           style={[
             styles.iconWrapper,
-            CurrentScreen === "homePage" && ([styles.activeIcon , {backgroundColor: CurrentColor}]),
+            CurrentScreen === "homePage" && [
+              styles.activeIcon,
+              { backgroundColor: CurrentColor },
+            ],
           ]}
         >
           <Svg
@@ -73,7 +79,10 @@ const BottomNavBar = ({ CurrentScreen, ColorTheme }) => {
           }}
           style={[
             styles.iconWrapper,
-            CurrentScreen === "profile" && ([styles.activeIcon , {backgroundColor: CurrentColor}]),
+            CurrentScreen === "profile" && [
+              styles.activeIcon,
+              { backgroundColor: CurrentColor },
+            ],
           ]}
         >
           <Svg
@@ -132,7 +141,7 @@ const styles = StyleSheet.create({
   activeIcon: {
     backgroundColor: Colors.main.backgroundcolor,
     width: "30%",
-    marginHorizontal: -20,
+    marginHorizontal: -30,
     height: 50,
   },
   icon: {
@@ -146,4 +155,3 @@ const styles = StyleSheet.create({
 });
 
 export default BottomNavBar;
-
