@@ -11,10 +11,15 @@ import React from "react";
 import Colors from "../../constants/Colors";
 import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { useState } from "react";
+import { set } from "lodash";
 
 export default function OneCar() {
   const item = Route.params.item;
   console.log(item);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
   const InfoItemDisplay = ({ title, value }) => (
     <View style={styles.InfoItem}>
@@ -84,6 +89,16 @@ export default function OneCar() {
             <InfoHeading title="Price" />
             <InfoItemDisplay title="Price/Day" value={item.price + "$"} />
           </View>
+          <DateTimePicker
+            value={startDate}
+            mode="date"
+            is24Hour={true}
+            display="default"
+            onChange={(event, selectedDate) => {
+              const currentDate = selectedDate || startDate;
+              setStartDate(currentDate);
+            }}
+          />
           <TouchableOpacity
             style={styles.bookButton}
             onPress={() => {
