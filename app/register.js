@@ -47,12 +47,12 @@ export default function register() {
       setError("Please enter Password");
       return;
     }
-    if (!confirmPassword) {
+    if (!confirmpassword) {
       setError("Please enter Confirm Password");
       return;
     }
   
-    if (password !== confirmPassword) {
+    if (password !== confirmpassword) {
       setError("Passwords do not match");
       return;
     }

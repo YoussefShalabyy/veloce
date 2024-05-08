@@ -61,7 +61,7 @@ const CarDisplayer = ({ cars }) => (
         </TouchableOpacity>
       </View>
     )}
-    keyExtractor={(item, index) => index.toString()} // Added keyExtractor
+    keyExtractor={(item, index) => index.toString()}
   />
 );
 
