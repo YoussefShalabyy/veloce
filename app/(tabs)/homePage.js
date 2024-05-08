@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   Pressable,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
@@ -185,6 +186,7 @@ export default function HomePage() {
             />
           </View>
         </View>
+        <TouchableOpacity onPress={()=>router.push("rentPage")}><Text>rent page</Text></TouchableOpacity>
         {cars.length !== 0 && <CarDisplayer cars={cars} />}
         <BottomNavBar CurrentScreen={"homePage"} />
       </View>
