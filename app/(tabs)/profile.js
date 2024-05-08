@@ -28,6 +28,7 @@ import {
 import { auth, db } from "../../firebase";
 import { useEffect, useState } from "react";
 import { set } from "lodash";
+import AdminNavBar from "../../components/AdminNavBar";
 
 export default function profile() {
   const [user, setUser] = useState([]);
@@ -204,8 +205,7 @@ export default function profile() {
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
-
-        <BottomNavBar CurrentScreen={"profile"} />
+         {user.isAdmin?( <AdminNavBar CurrentScreen={"profile"} />):( <BottomNavBar CurrentScreen={"profile"} />)}
       </View>
     </SafeAreaView>
   );

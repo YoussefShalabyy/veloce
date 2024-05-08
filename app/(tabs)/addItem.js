@@ -21,6 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import Colors from "../../constants/Colors";
 import BottomNavBar from "../../components/BottomNavBar";
+import AdminNavBar from "../../components/AdminNavBar";
 
 export default function Add() {
   const [brandList, setBrandList] = useState([]);
@@ -294,6 +295,7 @@ export default function Add() {
                   style={({ pressed }) => [
                     {
                       opacity: pressed ? 0.5 : 1,
+                      marginBottom: 10,
                     },
                     styles.submitButton,
                   ]}
@@ -308,6 +310,7 @@ export default function Add() {
             )}
           </Formik>
         </ScrollView>
+        <AdminNavBar CurrentScreen="addItem" />
       </View>
     </SafeAreaView>
   );

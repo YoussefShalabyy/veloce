@@ -39,7 +39,7 @@ export default function register() {
       setError("Please enter Email");
       return;
     }
-    if (!phone) {
+    if (!phoneNumber) {
       setError("Please enter Phone");
       return;
     }

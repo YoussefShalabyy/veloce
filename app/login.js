@@ -91,7 +91,7 @@ export default function LoginPage() {
         const userData = docSnapshot.data();
         console.log("User data:", userData);
         if (userData.isAdmin) {
-          router.navigate("homePage"); // Replace with the correct screen name
+          router.navigate("admin/adminPage"); // Replace with the correct screen name
           console.log("User is admin");
         } else {
           router.navigate("homePage"); // Replace with the correct screen name
