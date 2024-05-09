@@ -51,12 +51,12 @@ export default function register() {
       setError("Please enter Confirm Password");
       return;
     }
-  
+
     if (password !== confirmpassword) {
       setError("Passwords do not match");
       return;
     }
-  
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -167,7 +167,6 @@ export default function register() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
@@ -218,7 +217,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     maxHeight: 60,
-    backgroundColor: Colors.light.backgroundcolor,
+    backgroundColor: Colors.main.orange,
     fontSize: 18,
   },
   lowerSection: {

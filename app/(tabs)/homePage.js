@@ -134,12 +134,7 @@ export default function HomePage() {
               {userName}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => router.push("rentPage")}
-            style={{ flex: 1, alignItems: "flex-end", marginRight: 20 }}
-          >
-            <FontAwesome5 name="car-alt" size={40} color="black" />
-          </TouchableOpacity>
+
           <View style={styles.ProfileView}>
             <Image source={logo} style={styles.ProfileIcon} />
           </View>
@@ -262,6 +257,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: 10,
     flexDirection: "column",
+  },
+  OneItemContainer: {
+    justifyContent: "flex-end",
+    alignItems: "center",
+    minHeight: 90,
+    maxHeight: 90,
+    marginBottom: 10,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: {
@@ -270,13 +272,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  OneItemContainer: {
-    justifyContent: "flex-end",
-    alignItems: "center",
-    minHeight: 90,
-    maxHeight: 90,
-    marginBottom: 10,
   },
   categoryImage: {
     resizeMode: "contain",

@@ -5,13 +5,16 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  SafeAreaView,
 } from "react-native";
 import { auth, db } from "../../firebase";
 import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import CarItem from "../../components/CarItem";
 import { router } from "expo-router";
-
+import { onSnapshot } from "firebase/firestore";
+import BottomNavBar from "../../components/BottomNavBar";
+import Colors from "../../constants/Colors";
 const RentPage = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +65,21 @@ const RentPage = () => {
     }
   };
 
+  useEffect(() => {
+    const userId = auth.currentUser.uid;
+    const docRef = doc(db, "rents", userId);
+    const unsubscribe = onSnapshot(collection(docRef, "cars"), (snapshot) => {
+      const fetchedCars = [];
+      snapshot.forEach((doc) => {
+        const carData = doc.data();
+        const carWithId = { id: doc.id, ...carData };
+        fetchedCars.push(carWithId);
+      });
+      setCars(fetchedCars);
+    });
+    return unsubscribe;
+  }, []);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -72,9 +90,7 @@ const RentPage = () => {
   if (cars.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>
-          You haven't rented any cars yet...
-        </Text>
+        <Text style={styles.emptyText}>You haven't rented any cars yet...</Text>
         <View style={styles.searchContainer}>
           <Text style={styles.searchText}>Search for your favorite car</Text>
           <TouchableOpacity onPress={() => router.push("search")}>
@@ -86,41 +102,60 @@ const RentPage = () => {
   }
 
   return (
-    <View style={{ alignItems: "center", justifyContent: "center" }}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <AntDesign name="back" size={44} color="black" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Your Rents</Text>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.innerContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <AntDesign name="back" size={44} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Your Rents</Text>
+        </View>
+        <Text style={{ fontSize: 30, marginBottom: 10, fontWeight: 600 }}>
+          Total Price: ${totalPrice}
+        </Text>
+        <FlatList
+          style={styles.list}
+          data={cars}
+          renderItem={({ item }) => (
+            <CarItem car={item} onDelete={() => handleDeleteCar(item.id)} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+        <BottomNavBar CurrentScreen={"rent"} />
       </View>
-      <Text style={{ fontSize: 30,marginBottom:10, fontWeight: 600 }}>
-        Total Price: ${totalPrice}
-      </Text>
-      <FlatList
-        style={{ width: "100%" }}
-        data={cars}
-        renderItem={({ item }) => (
-          <CarItem car={item} onDelete={() => handleDeleteCar(item.id)} />
-        )}
-        keyExtractor={(item) => item.id}
-      />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    paddingTop: 40,
+    paddingBottom: 20,
+    minWidth: "100%",
+    flex: 1,
+    backgroundColor: Colors.light.whiteBackground,
+    alignItems: "center",
+  },
+  innerContainer: {
+    flex: 1,
+    minWidth: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+  },
   header: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: Colors.light.whiteBackground,
     marginBottom: 10,
     alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    elevation: 5,
   },
   backButton: {
     marginLeft: 10,
@@ -149,6 +184,12 @@ const styles = StyleSheet.create({
   searchText: {
     fontSize: 25,
     marginRight: 10,
+  },
+  list: {
+    minWidth: "100%",
+    marginTop: 10,
+    marginBottom: 35,
+    paddingHorizontal: 5,
   },
 });
 

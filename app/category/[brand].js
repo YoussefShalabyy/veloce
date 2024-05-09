@@ -18,8 +18,7 @@ import Colors from "../../constants/Colors";
 import { Route } from "expo-router/build/Route";
 import CarsDisplayer from "../../components/CarsDisplayer";
 
-
-export default function Category({ route }) {
+export default function Category() {
   const [cars, setCars] = useState([]);
   const [FilteredCars, setFilteredCars] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,14 +72,22 @@ export default function Category({ route }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.innerContainer}>
-        <View style={[styles.HeaderView, { backgroundColor: ColorTheme }]}>
-          <View style={[styles.LogoView, { backgroundColor: ColorTheme }]}>
-            <Image source={{ uri: Brand.logo }} style={styles.BrandLogo} />
-          </View>
-          <View style={styles.BrandData}>
-            <Text style={styles.BrandName}>{BrandName}</Text>
+        <View
+          style={{
+            width: "100%",
+            paddingHorizontal: 20,
+          }}
+        >
+          <View style={[styles.HeaderView, { backgroundColor: ColorTheme }]}>
+            <View style={[styles.LogoView, { backgroundColor: ColorTheme }]}>
+              <Image source={{ uri: Brand.logo }} style={styles.BrandLogo} />
+            </View>
+            <View style={styles.BrandData}>
+              <Text style={styles.BrandName}>{BrandName}</Text>
+            </View>
           </View>
         </View>
+
         <View style={styles.bodyTypesView}>
           <FlatList
             horizontal
@@ -133,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   HeaderView: {
-    paddingHorizontal: 20,
+    minWidth: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -147,6 +154,15 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     paddingVertical: 5,
+  },
+  bodyTypesView: {
+    marginTop: -10,
+    paddingTop: 10,
+    zIndex: -1,
+    minHeight: 70,
+    maxHeight: 70,
+    paddingHorizontal: 20,
+    minWidth: "100%",
   },
   LogoView: {
     justifyContent: "center",
@@ -171,15 +187,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "bold",
   },
-  bodyTypesView: {
-    marginTop: -10,
-    paddingTop: 10,
-    zIndex: -1,
-    minHeight: 70,
-    maxHeight: 70,
-    paddingHorizontal: 24,
-    minWidth: "100%",
-  },
+
   BrandsList: {
     marginTop: -10,
     backgroundColor: Colors.dark.backgroundcolor,

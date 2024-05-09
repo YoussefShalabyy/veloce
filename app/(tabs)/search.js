@@ -7,6 +7,7 @@ import {
   TextInput,
   ActivityIndicator,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -87,6 +88,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.whiteBackground,
     alignItems: "center",
+    paddingBottom: Platform.OS === "ios" ? 0 : 20,
   },
   innerContainer: {
     flex: 1,

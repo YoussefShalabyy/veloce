@@ -67,9 +67,10 @@ const CarDisplayer = ({ cars }) => (
 
 const styles = StyleSheet.create({
   list: {
-    width: "100%",
+    minWidth: "100%",
     marginTop: 10,
     marginBottom: 35,
+    paddingHorizontal: 5,
   },
   item: {
     flexDirection: "column",

@@ -1,11 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { deleteDoc, doc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 
 const CarItem = ({ car }) => {
-  
   const formatDate = (timestamp) => {
     const date = new Date(timestamp.seconds * 1000);
     const day = date.getDate();
@@ -32,7 +38,7 @@ const CarItem = ({ car }) => {
       "Are you sure you want to delete this car?",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Delete", onPress: handleDelete, style: "destructive" }
+        { text: "Delete", onPress: handleDelete, style: "destructive" },
       ]
     );
   };
@@ -42,10 +48,20 @@ const CarItem = ({ car }) => {
       <Image source={{ uri: car.item.images[0] }} style={styles.image} />
       <View style={styles.detailsContainer}>
         <Text style={styles.title}>{car.item.name}</Text>
-        <Text style={styles.text}>Rent Days: <Text style={{fontWeight:600}}>{car.numberOfDays}</Text></Text>
-        <Text style={styles.text}>Start Date: <Text style={{fontWeight:600}}>{formatDate(car.startDate)}</Text> </Text>
-        <Text style={styles.text}>End Date: <Text style={{fontWeight:600}}>{formatDate(car.endDate)}</Text></Text>
-        <Text style={styles.text}>Price: <Text style={{fontWeight:600}}>{car.numberOfDays}</Text></Text>
+        <Text style={styles.text}>
+          Rent Days: <Text style={{ fontWeight: 600 }}>{car.numberOfDays}</Text>
+        </Text>
+        <Text style={styles.text}>
+          Start Date:{" "}
+          <Text style={{ fontWeight: 600 }}>{formatDate(car.startDate)}</Text>{" "}
+        </Text>
+        <Text style={styles.text}>
+          End Date:{" "}
+          <Text style={{ fontWeight: 600 }}>{formatDate(car.endDate)}</Text>
+        </Text>
+        <Text style={styles.text}>
+          Price: <Text style={{ fontWeight: 600 }}>${car.totalPrice}</Text>
+        </Text>
       </View>
       <TouchableOpacity onPress={confirmDelete}>
         <Feather name="trash-2" size={30} color="red" />

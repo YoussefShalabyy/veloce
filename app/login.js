@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import Input from "../components/input";
 import Btn from "../components/btn";
@@ -47,8 +48,7 @@ export default function LoginPage() {
               const errorMessage = error.message;
               alert(errorMessage);
             });
-        }
-        else {
+        } else {
           setLoading(false);
         }
       } catch (error) {
@@ -156,22 +156,11 @@ export default function LoginPage() {
           secureTextEntry={true}
           style={styles.Input}
         />
-
-        <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
-          <Text style={styles.loginBtnText}>Login</Text>
-        </TouchableOpacity>
-
-        {/* <Text style={styles.loginWithText}>Or Sign in with</Text>
-        <View style={styles.rowView}>
-          <TouchableOpacity style={styles.loginGoogleButton}>
-            <Image source={googleIcon} style={styles.loginWithIcon} />
-            <Text style={styles.loginGoogleText}>Google</Text>
+        <View style={styles.loginView}>
+          <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+            <Text style={styles.loginBtnText}>Login</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.loginFacebookButton}>
-            <Image source={facebookIcon} style={styles.loginWithIcon} />
-            <Text style={styles.loginFacebookText}>Facebook</Text>
-          </TouchableOpacity>
-        </View> */}
+        </View>
 
         <View style={styles.lowerSection}>
           <Btn
@@ -182,6 +171,7 @@ export default function LoginPage() {
           />
           <Btn
             text="Don't Have An Account? Register"
+            type="Link"
             style={styles.linkBtn}
             onPress={handleDontHaveAcc}
           />
@@ -229,13 +219,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     backgroundColor: Colors.light.backgroundcolor,
   },
-  loginBtn: {
-    backgroundColor: Colors.light.backgroundcolor,
+  loginView: {
     minWidth: "100%",
-    maxWidth: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
+    padding: Platform.OS === "ios" ? 0 : 20,
+  },
+  loginBtn: {
+    backgroundColor: Colors.main.orange,
+    minWidth: "100%",
     borderRadius: 100,
     height: 60,
-    marginVertical: 20,
+    marginTop: Platform.OS === "ios" ? 20 : 0,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -310,8 +306,7 @@ const styles = StyleSheet.create({
   linkBtn: {
     backgroundColor: Colors.light.backgroundcolor,
     fontSize: 16,
-    minWidth: "300",
-    maxWidth: "300",
+    minWidth: "100%",
     marginTop: 10,
     maxHeight: 40,
     minHeight: 40,

@@ -12,7 +12,7 @@ import React, { useEffect } from "react";
 import Colors from "../../constants/Colors";
 import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { set } from "lodash";
 import { auth, db } from "../../firebase";
@@ -250,6 +250,7 @@ export default function OneCar() {
             >
               <Text style={styles.bookButtonText}>Release The Beast</Text>
             </TouchableOpacity>
+
           )}
         </View>
       </ScrollView>
