@@ -1,154 +1,155 @@
-import { View, Text, FlatList ,StyleSheet,Image,TextInput,TouchableOpacity} from "react-native";
 import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import { auth, db } from "../../firebase";
-import { collection, doc, getDocs } from "firebase/firestore";
-import CarDisplayer from "../../components/CarsDisplayer";
-import Colors from "../../constants/Colors";
+import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import CarItem from "../../components/CarItem";
 import { router } from "expo-router";
-import { MaterialIcons } from '@expo/vector-icons';
 
+const RentPage = () => {
+  const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalPrice, setTotalPrice] = useState(0);
 
+  useEffect(() => {
+    getData();
+  }, []);
 
+  useEffect(() => {
+    calculateTotalPrice();
+  }, [cars]);
 
-export default function rentPage() {
-  const [cars, setRentedCars] = useState([]);
-  const [userId, setUserId] = useState(null); // State to store user id
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    cars.forEach((car) => {
+      totalPrice += parseFloat(car.totalPrice);
+    });
+    setTotalPrice(totalPrice.toFixed(2));
+  };
 
-    useEffect(() => {
-      fetchUserId(); // Fetch userId once component mounts
-    }, []);
-
-  // useEffect(()=>{
-  //   fetchData()},[]);
-
- useEffect(() => {
-      if (userId) {
-        fetchData(); // Fetch data only if userId is available
-      }
-    }, [userId]); // Execute only when userId changes
-      // Function to fetch user id
-    const fetchUserId = () => {
-      const currentUser = auth.currentUser;
-      if (currentUser) {
-        setUserId(currentUser.uid); // Set userId state
-      }
-    };
-
-
-  const fetchData = async () => {
+  const getData = async () => {
     try {
       const userId = auth.currentUser.uid;
       const docRef = doc(db, "rents", userId);
       const querySnapshot = await getDocs(collection(docRef, "cars"));
-      const fetchedRentedCars = [];
+      const fetchedCars = [];
       querySnapshot.forEach((doc) => {
         const carData = doc.data();
         const carWithId = { id: doc.id, ...carData };
-        fetchedRentedCars.push(carWithId);
+        fetchedCars.push(carWithId);
       });
-      setRentedCars(fetchedRentedCars);
-      console.log(fetchedRentedCars);
+      setCars(fetchedCars);
+      setLoading(false);
     } catch (error) {
-      console.error("Error fetching rented cars:", error);
+      console.error("Error fetching data: ", error);
+      setLoading(false);
     }
   };
 
-  const formatDate = (date) => {
-    if (!date) return "";
-    return new Date(date.seconds * 1000).toLocaleDateString();
+  const handleDeleteCar = async (carId) => {
+    try {
+      await deleteDoc(doc(db, "cars", carId));
+      const updatedCars = cars.filter((car) => car.id !== carId);
+      setCars(updatedCars);
+    } catch (error) {
+      console.error("Error deleting car: ", error);
+    }
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+  if (cars.length === 0) {
+    return (
+      <View style={styles.emptyContainer}>
+        <Text style={styles.emptyText}>
+          You haven't rented any cars yet...
+        </Text>
+        <View style={styles.searchContainer}>
+          <Text style={styles.searchText}>Search for your favorite car</Text>
+          <TouchableOpacity onPress={() => router.push("search")}>
+            <FontAwesome name="search" size={40} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity
-          style={styles.goBackBtn}
-          onPress={() => {
-            router.back();
-          }}
-        >
-          {/* <Text style={styles.goBackText}>{"<="}</Text> */}
-          <MaterialIcons name="arrow-back" size={24} color="black" />
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <AntDesign name="back" size={44} color="black" />
         </TouchableOpacity>
-     <FlatList
-      data={cars}
-      renderItem={({ item }) => (
-       <View style={styles.detailsContainer}>
-          <View style={styles.imageView}>
-            <Image source={{ uri: item.item.images[0] }} style={styles.image} />
-          </View>
-          <View style={styles.infoView}>
-              <View>
-                <Text style={styles.detailText}>name : {item.item.name}</Text>
-                <Text style={styles.detailText}>Brand: {item.item.brand}</Text>
-                <View style={styles.detailText}>color: <View style={[styles.colorView, { backgroundColor: item.item.color }]} /> </View>
-              </View>
-              <View>
-                <Text style={styles.detailText}>The Start Date : {formatDate(item.startDate)}</Text>
-                <Text style={styles.detailText}>The End Date : {formatDate(item.endDate)}</Text>
-                <Text style={styles.detailText}> The Number Of Days :  {item.numberOfDays} days</Text>
-                <Text style={styles.detailText}>Total Price : {item.totalPrice}$</Text> 
-              </View>
-              <View>
-                <Text style={styles.detailText}> {item.item.description}</Text>
-              </View>
-          </View>
-        </View>
-      )}
-    /> 
-  </View>
+        <Text style={styles.headerText}>Your Rents</Text>
+      </View>
+      <Text style={{ fontSize: 30,marginBottom:10, fontWeight: 600 }}>
+        Total Price: ${totalPrice}
+      </Text>
+      <FlatList
+        style={{ width: "100%" }}
+        data={cars}
+        renderItem={({ item }) => (
+          <CarItem car={item} onDelete={() => handleDeleteCar(item.id)} />
+        )}
+        keyExtractor={(item) => item.id}
+      />
+    </View>
   );
-}
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    padding: 20,
-  },
-  imageView: {
-    backgroundColor: Colors.main.orange,
-    alignItems: "center",
-    width: "100%",
-    padding: 10,
-    borderRadius: 20,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 20,
-    resizeMode: "contain",
-  },
-  detailsContainer: {
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: "#e1e1e1",
-    borderRadius: 10,
+};
 
-  },
-  detailText: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  colorView: {
-    width: 50,
-    height: 50,
-    borderRadius: 10,
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: "#f5f5f5",
     marginBottom: 10,
-  },
-  goBackBtn: {
-    backgroundColor: Colors.main.orange,
-    borderRadius: 10,
-    marginBottom: 10,
-    width: 50,
-    height: 50,
-    justifyContent: "center",
+    alignSelf: "flex-start",
+    flexDirection: "row",
     alignItems: "center",
-    borderRadius: 100,
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  goBackText: {
-    color: Colors.light.whiteBackground,
+  backButton: {
+    marginLeft: 10,
+  },
+  headerText: {
+    flex: 1,
+    textAlign: "center",
     fontSize: 30,
-    fontWeight: "bold",
+    fontWeight: "600",
+  },
+  emptyContainer: {
+    marginLeft: "10%",
+    alignItems: "flex-start",
+    marginTop: 100,
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+  emptyText: {
+    fontSize: 25,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  searchText: {
+    fontSize: 25,
+    marginRight: 10,
   },
 });
+
+export default RentPage;

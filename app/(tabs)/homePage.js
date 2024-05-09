@@ -21,6 +21,7 @@ import { Route } from "expo-router/build/Route";
 import CarDisplayer from "../../components/CarsDisplayer";
 import { where, query, getDoc, doc } from "firebase/firestore";
 import { set } from "lodash";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 export default function HomePage() {
   const [cars, setCars] = useState([]);
@@ -133,6 +134,12 @@ export default function HomePage() {
               {userName}
             </Text>
           </View>
+          <TouchableOpacity
+            onPress={() => router.push("rentPage")}
+            style={{ flex: 1, alignItems: "flex-end", marginRight: 20 }}
+          >
+            <FontAwesome5 name="car-alt" size={40} color="black" />
+          </TouchableOpacity>
           <View style={styles.ProfileView}>
             <Image source={logo} style={styles.ProfileIcon} />
           </View>
@@ -186,7 +193,6 @@ export default function HomePage() {
             />
           </View>
         </View>
-        <TouchableOpacity onPress={()=>router.push("rentPage")}><Text>rent page</Text></TouchableOpacity>
         {cars.length !== 0 && <CarDisplayer cars={cars} />}
         <BottomNavBar CurrentScreen={"homePage"} />
       </View>
