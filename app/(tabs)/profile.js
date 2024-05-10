@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
+    paddingBottom : Platform.OS === "ios" ? 0 : 20,
   },
   HeaderView: {
     paddingHorizontal: 20,
