@@ -7,22 +7,53 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  TextInput,
+  Platform,
 } from "react-native";
 import React, { useEffect } from "react";
 import Colors from "../../constants/Colors";
 import { router } from "expo-router";
 import { Route } from "expo-router/build/Route";
-import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
+import DateTimePicker, {
+  DateTimePickerAndroid,
+} from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { set } from "lodash";
 import { auth, db } from "../../firebase";
 import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+const formatDate = (rowDate) => {
+  let date = new Date(rowDate);
+
+  let year = date.getFullYear();
+  let monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  let month = monthNames[date.getMonth()];
+  let day = date.getDate();
+  return `${day} ${month} ${year}`;
+};
 
 export default function OneCar() {
   const item = Route.params.item;
+  const todayDate = new Date();
   console.log(item);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [startDateString, setStartDateString] = useState(formatDate(todayDate)); // Set startDateString to today's date
+  const [endDateString, setEndDateString] = useState(formatDate(todayDate));
+  const [showPicker1, setShowPicker1] = useState(false);
+  const [showPicker2, setShowPicker2] = useState(false);
   const [toggled, setToggled] = useState(false);
   const [numberOfDays, setNumberOfDays] = useState(0);
   const NoOfDays = () => {
@@ -71,6 +102,8 @@ export default function OneCar() {
       console.log("new Car id", newDoc.id);
       setStartDate(new Date());
       setEndDate(new Date());
+      setStartDateString(formatDate(new Date()));
+      setEndDateString(formatDate(new Date()));
       setToggled(!toggled);
       Alert.alert("Added..!");
     } catch (error) {
@@ -89,6 +122,38 @@ export default function OneCar() {
       console.log("added A User With Id:", userId);
     } catch (error) {
       console.log(error);
+    }
+  };
+  const toggleDatePicker1 = () => {
+    setShowPicker1(!showPicker1);
+  };
+  const onChange1 = ({ type }, selectedDate) => {
+    if (type == "set") {
+      const currentDate = selectedDate;
+      setStartDate(currentDate);
+
+      if (Platform.OS === "android") {
+        toggleDatePicker1();
+        setStartDateString(formatDate(currentDate));
+      }
+      console.log("StartDate", currentDate, startDate);
+    } else {
+      toggleDatePicker1();
+    }
+  };
+  const toggleDatePicker2 = () => {
+    setShowPicker2(!showPicker2);
+  };
+  const onChange2 = ({ type }, selectedDate) => {
+    if (type == "set") {
+      const currentDate = selectedDate;
+      setEndDate(currentDate);
+      if (Platform.OS === "android") {
+        toggleDatePicker2();
+        setEndDateString(formatDate(currentDate));
+      }
+    } else {
+      toggleDatePicker2();
     }
   };
 
@@ -156,51 +221,90 @@ export default function OneCar() {
                 alignItems: "center",
               }}
             >
-              <DateTimePicker
-                value={startDate}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                onChange={(event, selectedDate) => {
-                  if (selectedDate < new Date() || selectedDate > endDate) {
-                    if (event.type === "set") {
-                      alert("Invalid date");
-                      setStartDate(new Date());
+              {Platform.OS === "ios" ? (
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate < new Date() || selectedDate > endDate) {
+                      if (event.type === "set") {
+                        alert("Invalid date");
+                        setStartDate(new Date());
+                      }
+                      return;
+                    } else {
+                      const currentDate = selectedDate;
+                      setStartDate(currentDate);
                     }
-                    return;
-                  } else {
+                  }}
+                />
+              ) : (
+                <TouchableOpacity onPress={toggleDatePicker1}>
+                  <TextInput //--------
+                    style={styles.input}
+                    value={startDateString}
+                    onChangeText={setStartDateString}
+                    placeholder="11 May 2024"
+                    placeholderTextColor="black"
+                    editable={false}
+                  />
+                </TouchableOpacity>
+              )}
+              {showPicker1 && (
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={onChange1}
+                  minimumDate={new Date()}
+                  maximumDate={endDate}
+                />
+              )}
+
+              <Text style={styles.To}>To</Text>
+
+              {Platform.OS === "ios" ? (
+                <DateTimePicker
+                  value={endDate}
+                  mode="date"
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedDate) => {
                     const currentDate = selectedDate;
-                    setStartDate(currentDate);
-                  }
-                }}
-              />
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontSize: 20,
-                  fontWeight: "bold",
-                }}
-              >
-                To
-              </Text>
-              <DateTimePicker
-                value={endDate}
-                mode="date"
-                is24Hour={true}
-                display="default"
-                onChange={(event, selectedDate) => {
-                  const currentDate = selectedDate;
-                  if (currentDate < new Date() || currentDate < startDate) {
-                    if (event.type === "set") {
-                      alert("Invalid date");
-                      setEndDate(startDate);
+                    if (currentDate < new Date() || currentDate < startDate) {
+                      if (event.type === "set") {
+                        alert("Invalid date");
+                        setEndDate(startDate);
+                      }
+                      return;
+                    } else {
+                      setEndDate(currentDate);
                     }
-                    return;
-                  } else {
-                    setEndDate(currentDate);
-                  }
-                }}
-              />
+                  }}
+                />
+              ) : (
+                <TouchableOpacity onPress={toggleDatePicker2}>
+                  <TextInput //------
+                    style={styles.input}
+                    value={endDateString}
+                    onChangeText={setEndDateString}
+                    placeholder="11 May 2024"
+                    placeholderTextColor="black"
+                    editable={false}
+                  />
+                </TouchableOpacity>
+              )}
+              {showPicker2 && (
+                <DateTimePicker
+                  value={endDate}
+                  mode="date"
+                  display="spinner"
+                  onChange={onChange2}
+                  minimumDate={startDate}
+                />
+              )}
             </View>
           ) : (
             <View></View>
@@ -250,7 +354,6 @@ export default function OneCar() {
             >
               <Text style={styles.bookButtonText}>Release The Beast</Text>
             </TouchableOpacity>
-
           )}
         </View>
       </ScrollView>
@@ -270,6 +373,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.whiteBackground,
     alignItems: "center",
   },
+  To: {
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
   innerContainer: {
     flex: 1,
     paddingHorizontal: 20,
@@ -277,6 +385,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center",
+  },
+  input: {
+    color: "#333333",
+    borderRadius: 10,
+    padding: 7,
+    backgroundColor: "#e3ded8",
   },
   TopNavView: {
     marginTop: 10,

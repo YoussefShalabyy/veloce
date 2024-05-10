@@ -23,13 +23,19 @@ const AdminCarDisplayer = ({ cars }) => (
         <View style={styles.CarHeader}>
           <Text style={styles.carName}>{item.name}</Text>
           <TouchableOpacity
-          style={{padding:10,backgroundColor:"#1E90FF",borderRadius:30}}
+            style={{
+              // padding:8,
+              // backgroundColor: "#1E90FF",
+              // borderRadius: 30,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             onPress={() => {
-                console.log("idddd",item.id)
+              console.log("idddd", item.id);
               router.replace("editCar/" + item.id);
             }}
           >
-            <Text style={{ color: "white",fontSize:20 }}>update/delete</Text>
+            <Text style={{ color: "#1E90FF", fontSize: 15 }}>update/delete</Text>
           </TouchableOpacity>
         </View>
 

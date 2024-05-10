@@ -167,7 +167,7 @@ export default function LoginPage() {
             type="Link"
             text="Forgot Password?"
             style={styles.forgetPassword}
-            onPress={handelForgetPassword}
+            onPress={()=>router.push("forgotPassword")}
           />
           <Btn
             text="Don't Have An Account? Register"

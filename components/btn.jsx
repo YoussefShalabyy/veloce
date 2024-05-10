@@ -24,7 +24,7 @@ export default function Btn({
       ]}
       onPress={onPress}
     >
-      <Text style={[styles.btnText, { fontSize: fontSize, color: textColor }]}>
+      <Text style={[styles.btnText, { fontSize: fontSize||15, color: textColor }]}>
         {text}
       </Text>
     </Pressable>

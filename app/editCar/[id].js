@@ -1,4 +1,4 @@
-import { ScrollView, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions } from "react-native";
+import { ScrollView, SafeAreaView, StatusBar, StyleSheet, View, useWindowDimensions, TouchableOpacity, Text } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router';
 import Btn from "../../components/btn";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import Brand from "../../controllers/Brand";
 import Car from "../../controllers/Car";
 import Loading from "../../components/Loading";
 import Colors from "../../constants/Colors";
+import { AntDesign } from "@expo/vector-icons";
 
 const EditCar = () => {
     const { width, height } = useWindowDimensions();
@@ -177,7 +178,7 @@ const EditCar = () => {
             placeHolder={item.placeHolder}
             carData={carData}
             updatedCarDataController={{updatedCarData, setUpdatedCarData}}
-            flexDirection={item.name === 'description' || item.name === 'brand' ? 'column' : 'row'}
+            flexDirection={item.name === 'brand' ? 'column' : 'row'}
             multiline={item.name === 'description' ? true : false}
             choices={item.name === 'brand' ? brands : []}
             key={item.name + 'Attr'}
@@ -193,6 +194,12 @@ const EditCar = () => {
 
     return (
         <SafeAreaView style={[GlobalStyles.container, {width: width, backgroundColor: Colors.light.whiteBackground, }]}>
+             <TouchableOpacity
+            onPress={() => router.back()}
+            style={{width:"100%"}}
+          >
+            <AntDesign style={{marginLeft:"5%"}} name="back" size={44} color="black" />
+          </TouchableOpacity>
             <ScrollView style={{ flex: 1, width: width, paddingHorizontal: 10 }} >
                 {fields}
             </ScrollView>

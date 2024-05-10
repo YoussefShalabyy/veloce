@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  Dimensions,
 } from "react-native";
 import { auth, db } from "../../firebase";
 import { collection, doc, getDocs, deleteDoc } from "firebase/firestore";
@@ -90,12 +91,23 @@ const RentPage = () => {
   if (cars.length === 0) {
     return (
       <View style={styles.emptyContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <AntDesign name="back" size={44} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Your Rents</Text>
+        </View>
+        <View style={{marginLeft:"3%",marginTop:"10%"}}>
         <Text style={styles.emptyText}>You haven't rented any cars yet...</Text>
         <View style={styles.searchContainer}>
           <Text style={styles.searchText}>Search for your favorite car</Text>
           <TouchableOpacity onPress={() => router.push("search")}>
             <FontAwesome name="search" size={40} color="black" />
           </TouchableOpacity>
+        </View>
         </View>
       </View>
     );
@@ -113,6 +125,8 @@ const RentPage = () => {
           </TouchableOpacity>
           <Text style={styles.headerText}>Your Rents</Text>
         </View>
+        <View style={styles.divider} />
+
         <Text style={{ fontSize: 30, marginBottom: 10, fontWeight: 600 }}>
           Total Price: ${totalPrice}
         </Text>
@@ -142,6 +156,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.whiteBackground,
     alignItems: "center",
   },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    width: Dimensions.get("window").width * 0.9,
+    marginBottom: 10,
+  },
   innerContainer: {
     flex: 1,
     minWidth: "100%",
@@ -167,9 +187,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   emptyContainer: {
-    marginLeft: "10%",
     alignItems: "flex-start",
-    marginTop: 100,
     width: "100%",
     justifyContent: "flex-start",
   },
