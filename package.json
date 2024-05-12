@@ -33,7 +33,12 @@
     "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "^15.2.0-rc.0",
     "react-native-swiper": "^1.6.0",
-    "react-native-web": "~0.19.6"
+    "react-native-web": "~0.19.6",
+    "firebase/firestore": "",
+"firebase/auth": "",
+"firebase/storage": "",
+"firebase/functions": "",
+"firebase/database": ""
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
