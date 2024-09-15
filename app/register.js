@@ -5,164 +5,100 @@ import {
   SafeAreaView,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+  TextInput,
 } from "react-native";
 import React, { useState } from "react";
-import Input from "../components/input";
-import Btn from "../components/btn";
-import { router } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { Platform } from "react-native";
 import Colors from "../constants/Colors";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "../firebase";
+import { router } from "expo-router";
+
+const Input = ({ label, value, onChangeText, secureTextEntry }) => (
+  <View style={styles.InputContainer}>
+    <View style={styles.labelContaier}>
+      <Text style={styles.label}>{label}</Text>
+    </View>
+    <TextInput
+      style={styles.TextInput}
+      value={value}
+      onChangeText={onChangeText}
+      secureTextEntry={secureTextEntry}
+    />
+  </View>
+);
 
 export default function register() {
-  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [address, setAddress] = useState("");
+  const [type, setType] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmpassword, setconfirmPassword] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [street, setStreet] = useState("");
-  const [region, setRegion] = useState("");
-  const [name, setName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleAlreadyHaveAcc = () => {
+  const handleHaveAccountBtn = () => {
     router.navigate("login");
-  };
-
-  const handleRegister = () => {
-    if (!name) {
-      setError("Please enter Username");
-      return;
-    }
-    if (!email) {
-      setError("Please enter Email");
-      return;
-    }
-    if (!phoneNumber) {
-      setError("Please enter Phone");
-      return;
-    }
-    if (!password) {
-      setError("Please enter Password");
-      return;
-    }
-    if (!confirmpassword) {
-      setError("Please enter Confirm Password");
-      return;
-    }
-
-    if (password !== confirmpassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        router.replace("login");
-        AddUserTOFirestore(user, phoneNumber, name);
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        setError(errorCode);
-      });
-  };
-
-  const AddUserTOFirestore = async (user, phoneNumber, name) => {
-    try {
-      await addDoc(collection(db, "users"), {
-        userID: user.uid,
-        email: user.email,
-        name: name,
-        phoneNumber: phoneNumber,
-        isAdmin: false,
-        street: street,
-        region: region,
-      });
-    } catch (e) {
-      console.error("Error adding document: ", e);
-    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        style={{ width: "100%" }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
       >
-        <View style={styles.innerContainer}>
-          <Text style={styles.heading}>Veloce</Text>
-          <Text style={styles.subHeading}>Register</Text>
-          <Input
-            placeHolder="Username"
-            onChangeText={setName}
-            value={name}
-            style={styles.Input}
-          />
-
-          <Input
-            placeHolder="Email"
-            onChangeText={setEmail}
-            value={email}
-            style={styles.Input}
-          />
-          <Input
-            placeHolder="Phone Number"
-            onChangeText={setPhoneNumber}
-            value={phoneNumber}
-            style={styles.Input}
-          />
-          <Input
-            placeHolder="Password"
-            onChangeText={setPassword}
-            value={password}
-            secureTextEntry={true}
-            style={styles.Input}
-          />
-          <Input
-            placeHolder="Confirm Password"
-            onChangeText={setconfirmPassword}
-            value={confirmpassword}
-            secureTextEntry={true}
-            style={styles.Input}
-          />
-          <Input
-            placeHolder="Street"
-            onChangeText={setStreet}
-            value={street}
-            style={styles.Input}
-          />
-          <Input
-            placeHolder="Region"
-            onChangeText={setRegion}
-            value={region}
-            style={styles.Input}
-          />
-
-          <Btn
-            text="Register"
-            style={styles.registerBtn}
-            onPress={() => {
-              if (password === confirmpassword) {
-                handleRegister();
-              } else {
-                Alert.alert("Password Does Not Match");
-              }
-            }}
-          />
-          <View style={styles.lowerSection}>
-            <Btn
-              text="Already Have An Account? Login"
-              style={styles.linkBtn}
-              onPress={handleAlreadyHaveAcc}
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.innerContainer}>
+            <Text style={styles.heading}>تسجيل مستخدم جديد</Text>
+            <Input
+              label="الاسم الاول"
+              value={firstName}
+              onChangeText={setFirstName}
             />
-          </View>
+            <Input
+              label="الاسم الاخير"
+              value={lastName}
+              onChangeText={setLastName}
+            />
+            <Input
+              label="اسم المستخدم"
+              value={username}
+              onChangeText={setUsername}
+            />
+            <Input label="العنوان" value={address} onChangeText={setAddress} />
+            <Input
+              label="كلمة المرور"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={true}
+            />
+            <Input
+              label="تأكيد كلمة المرور"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={true}
+            />
 
-          <Text style={styles.error}>{error}</Text>
-        </View>
-      </ScrollView>
+            <TouchableOpacity style={styles.registerBtn}>
+              <Text style={styles.btnText}>Register</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.linkBtn}
+              onPress={handleHaveAccountBtn}
+            >
+              <Text style={styles.linkText}>Already have an account?</Text>
+            </TouchableOpacity>
+
+            <View style={styles.lowerSection}>
+              <Text style={styles.error}>{error}</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -174,68 +110,54 @@ const styles = StyleSheet.create({
     bottom: 0,
     paddingTop: 40,
     paddingBottom: 20,
-    minWidth: "100%",
+    width: "100%",
     flex: 1,
-    backgroundColor: Colors.dark.backgroundcolor,
-    alignItems: "center",
+    backgroundColor: Colors.light.backgroundcolor,
   },
   innerContainer: {
-    padding: 20,
     flex: 1,
-    minWidth: "100%",
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignContent: "center",
-    alignItems: "center",
   },
   heading: {
-    color: Colors.light.backgroundcolor,
-    fontSize: 60,
+    fontSize: 24,
     fontWeight: "bold",
-  },
-  subHeading: {
-    fontSize: 18,
-    marginVertical: 20,
-    color: Colors.light.backgroundcolor,
-  },
-  btn2: {
-    width: "100%",
+    textAlign: "center",
+    marginBottom: 50,
   },
   error: {
     color: "red",
     fontSize: 18,
     marginTop: 10,
+    textAlign: "center",
   },
-  Input: {
+  InputContainer: {
+    marginVertical: 5,
+    marginHorizontal: 15,
+  },
+  labelContaier: {
+    marginHorizontal: 10,
+  },
+  label: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "right",
+  },
+  TextInput: {
     borderRadius: 100,
+    backgroundColor: Colors.light.whiteBackground,
+    padding: 15,
+    margin: 10,
+  },
+  loginBtn: {
     marginTop: 20,
-    maxHeight: 60,
-    marginVertical: 10,
-    fontSize: 18,
-    backgroundColor: Colors.light.backgroundcolor,
-  },
-  registerBtn: {
-    marginTop: 10,
-    marginBottom: 20,
-    maxHeight: 60,
+    borderRadius: 100,
     backgroundColor: Colors.main.orange,
-    fontSize: 18,
-  },
-  lowerSection: {
-    position: "absolute",
-    bottom: 0,
-    minWidth: "100%",
-    flex: 1,
+    padding: 15,
+    margin: 10,
     justifyContent: "center",
     alignContent: "center",
-    alignItems: "center",
-  },
-  linkBtn: {
-    backgroundColor: Colors.light.backgroundcolor,
-    fontSize: 16,
-    minWidth: "300",
-    maxWidth: "300",
-    maxHeight: 40,
-    minHeight: 40,
-    padding: -5,
   },
 });

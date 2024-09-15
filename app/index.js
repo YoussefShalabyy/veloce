@@ -1,18 +1,31 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import React from "react";
-import Welcome from "./welcome";
-import Add from "./(tabs)/addItem";
-import HomePage from "./(tabs)/homePage";
-import Login from "./login";
-
+import LoginPage from "./login";
+import Colors from "../constants/Colors";
 export default function index() {
-  return <Login />;
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
+        <LoginPage />
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    paddingTop: 40,
+    paddingBottom: 20,
+    width: "100%",
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: Colors.light.backgroundcolor,
+  },
+  innerContainer: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
   },
 });

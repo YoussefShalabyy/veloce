@@ -1,20 +1,26 @@
 import React from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import {router} from 'expo-router'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  SafeAreaView,
+} from "react-native";
+import { router } from "expo-router";
+import BottomNavBar from "../components/BottomNavBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Tickets from "../components/Tickets";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Image source={require("../assets/bmw3.png")} style={styles.logo} />
-      <Text style={styles.heading}>Welcome to Car Universe</Text>
-      <Text style={styles.subheading}>Find Your Dream Car Here</Text>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.navigate('welcome')}
-      >
-        <Text style={styles.buttonText}>Explore Cars</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.innerContainer}>
+        <Tickets />
+        <Text style={styles.heading}>Welcome to the App</Text>
+      </View>
+      <BottomNavBar currentScreen={"الصفحة الرئيسية"}/>
+    </SafeAreaView>
   );
 }
 
@@ -25,29 +31,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  logo: {
-    width: 150,
-    height: 150,
-    marginBottom: 20,
-  },
-  heading: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  subheading: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#007bff",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  innerContainer: {
+    minHeight: "100%",
+    minWidth: "100%",
+    padding: 20,
+    flex: 1,
+    minWidth: "100%",
+    justifyContent: "center",
+    alignContent: "center",
+    alignItems: "center",
   },
 });
